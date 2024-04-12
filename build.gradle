@@ -1,0 +1,56 @@
+plugins {
+    id "java-library"
+    id "io.spring.dependency-management" version "$version_springDependencyManagement"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$version_springBoot")
+    }
+
+    dependencies {
+        // Empty
+    }
+}
+
+[compileJava, compileTestJava]*.options*.encoding = "UTF-8"
+[compileJava, compileTestJava]*.options*.debug = true
+
+dependencies {
+    //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
+    compileOnly("io.netty:netty-buffer")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    testRuntimeOnly("io.netty:netty-buffer")
+}
+
+java {
+    //sourceCompatibility = 21
+    //targetCompatibility = 21
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+jar {
+    enabled = true
+
+    manifest {
+        attributes(
+                "Build-By": "https://github.com/tfreese",
+                "Build-Date": java.time.LocalDateTime.now().withNano(0),
+                "Build-JDK": System.getProperty("java.version") + " - " + System.getProperty("java.specification.vendor"),
+                "Build-Title": project.name,
+                "Build-Version": project.version
+        )
+    }
+}
+
+test {
+    enabled = true
+
+    useJUnitPlatform()
+}
