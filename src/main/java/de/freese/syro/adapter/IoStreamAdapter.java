@@ -1,5 +1,5 @@
 // Created: 30.09.22
-package de.freese.serializer.adapter;
+package de.freese.syro.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;

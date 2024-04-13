@@ -1,10 +1,10 @@
 // Created: 24.09.2020
-package de.freese.serializer.serializer;
+package de.freese.syro.serializer;
 
 import java.util.function.Function;
 
-import de.freese.serializer.adapter.DataReader;
-import de.freese.serializer.adapter.DataWriter;
+import de.freese.syro.adapter.DataReader;
+import de.freese.syro.adapter.DataWriter;
 
 /**
  * @author Thomas Freese

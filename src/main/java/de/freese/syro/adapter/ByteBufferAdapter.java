@@ -1,5 +1,5 @@
 // Created: 22.09.2020
-package de.freese.serializer.adapter;
+package de.freese.syro.adapter;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;

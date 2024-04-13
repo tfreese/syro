@@ -1,0 +1,7 @@
+= syro
+
+A simple serializer inspired by Kryo.
+
+== Link
+
+* https://github.com/EsotericSoftware/kryo[kryo, window="_blank"]

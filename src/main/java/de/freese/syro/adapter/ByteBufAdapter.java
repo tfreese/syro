@@ -1,5 +1,5 @@
 // Created: 04.10.2020
-package de.freese.serializer.adapter;
+package de.freese.syro.adapter;
 
 import java.util.Objects;
 

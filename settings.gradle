@@ -8,7 +8,7 @@ pluginManagement {
 }
 
 // Without rootProject.name the Name of the Projekt-Directory is used.
-//rootProject.name = "simple-serializer"
+//rootProject.name = "syro"
 
 dependencyResolutionManagement {
     repositories {

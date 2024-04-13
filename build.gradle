@@ -20,10 +20,10 @@ dependencies {
     //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     compileOnly("io.netty:netty-buffer")
 
+    testImplementation("io.netty:netty-buffer")
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    testRuntimeOnly("io.netty:netty-buffer")
 }
 
 java {
@@ -34,6 +34,15 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
+javadoc {
+    enabled = true
+
+    // No Errors for missing JavaDoc.
+    options.addBooleanOption("Xdoclint:none", true)
+    options.addStringOption("-quiet")
+}
+build.finalizedBy("javadoc")
 
 jar {
     enabled = true
