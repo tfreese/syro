@@ -10,7 +10,7 @@ import de.freese.syro.SerializerRegistry;
 import de.freese.syro.adapter.DataReader;
 import de.freese.syro.adapter.DataWriter;
 
-public class ObjectSerializer implements Serializer<Object> {
+public final class ObjectSerializer implements Serializer<Object> {
     private static final class ObjectSerializerHolder {
         private static final ObjectSerializer INSTANCE = new ObjectSerializer();
 
