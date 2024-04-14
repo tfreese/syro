@@ -7,10 +7,13 @@ import java.nio.charset.Charset;
  * @author Thomas Freese
  */
 public interface DataReader {
+    Charset getCharset();
+
     default boolean readBoolean() {
         return readByte() == 1;
     }
 
+    @SuppressWarnings("java:S2447")
     default Boolean readBooleanOrNull() {
         if (readByte() == 0) {
             return null;
@@ -87,6 +90,10 @@ public interface DataReader {
         }
 
         return readLong();
+    }
+
+    default String readString() {
+        return readString(getCharset());
     }
 
     default String readString(final Charset charset) {

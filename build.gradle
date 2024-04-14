@@ -1,6 +1,9 @@
 plugins {
     id "java-library"
     id "io.spring.dependency-management" version "$version_springDependencyManagement"
+    id "name.remal.sonarlint" version "4.0.0"
+    id "checkstyle"
+    id "jacoco"
 }
 
 dependencyManagement {
@@ -62,4 +65,91 @@ test {
     enabled = true
 
     useJUnitPlatform()
+
+    finalizedBy jacocoTestReport
+}
+
+// https://checkstyle.sourceforge.io
+checkstyle {
+    // Default Directory: <root>/config/checkstyle/
+    configDirectory = file("${System.getProperty('user.home')}/git/parents/config/checkstyle")
+    // configFile file("${System.getProperty('user.home')}/git/parents/config/checkstyle/checkstyle.xml")
+    // configFile rootProject.file("config/checkstyle/checkstyle.xml")
+
+    configProperties.put("org.checkstyle.suppressionFilter", file("${System.getProperty('user.home')}/git/parents/config/checkstyle/suppressions.xml"))
+
+    ignoreFailures = false
+    showViolations = true
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        xml.required = false
+        html.required = true
+        // html.stylesheet resources.text.fromFile('config/xsl/checkstyle-custom.xsl')
+    }
+}
+
+// https://rules.sonarsource.com/java
+// https://github.com/remal-gradle-plugins/sonarlint
+sonarLint {
+    ignoreFailures = true
+    isGeneratedCodeIgnored = true
+
+    languages {
+        include("java") // Enable Java language only, all other languages become disabled
+        exclude("kotlin") // Disable Kotlin language, all other languages remain enabled
+    }
+
+    logging {
+        withDescription = false // Show rule descriptions in console output
+    }
+
+    rules {
+        enable(
+                // Method names should comply with a naming convention. (that is disabled by default)
+                "java:S100",
+                // Class names should comply with a naming convention.(that is disabled by default)
+                "java:S101",
+                // Lines should not be too long.
+                "java:S103",
+                // Tabulation characters should not be used.
+                "java:S105"
+        )
+        disable(
+                // Replace this use of System.out by a logger.
+                "java:S106",
+                // Define and throw a dedicated exception instead of using a generic one.
+                "java:S112",
+                // This block of commented-out lines of code should be removed.
+                "java:S125",
+                // Loops should not contain more than a single "break" or "continue" statement.
+                "java:S135",
+                // Refactor your code to get this URI from a customizable parameter.
+                "java:S1075",
+                // Catch Exception instead of Throwable.
+                "java:S1181",
+                //  Define a constant instead of duplicating this literal.
+                "java:S1192",
+                // Invoke method(s) only conditionally. (Logger)
+                "java:S2629",
+                // Cognitive Complexity of methods should not be too high.
+                "java:S3776"
+        )
+
+        rule("java:S103") {
+            property("maximumLineLength", "180")
+        }
+
+        // Constructor/Method has <N> parameters, which is greater than <X> authorized.
+        rule("java:S107") {
+            property("max", "10")
+            property("constructorMax", "10")
+        }
+    }
+
+    // Allow upper camel-case for type parameter names
+    // ruleParameter("java:S119", "format", "^[A-Z][a-zA-Z0-9]*$")
+
+    // ignoredPaths.add("**/demo/FailsafeDemo.java")
 }

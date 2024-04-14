@@ -7,6 +7,8 @@ import java.nio.charset.Charset;
  * @author Thomas Freese
  */
 public interface DataWriter {
+    Charset getCharset();
+    
     default void writeBoolean(final boolean value) {
         writeByte((byte) (value ? 1 : 0));
     }
@@ -101,6 +103,10 @@ public interface DataWriter {
             writeByte((byte) 1);
             writeLong(value);
         }
+    }
+
+    default void writeString(final String value) {
+        writeString(value, getCharset());
     }
 
     default void writeString(final String value, final Charset charset) {

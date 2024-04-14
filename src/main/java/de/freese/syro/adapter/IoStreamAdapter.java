@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -27,6 +29,11 @@ public class IoStreamAdapter implements DataReader, DataWriter {
 
         this.inputStream = Objects.requireNonNull(inputStream, "inputStream required");
         this.outputStream = Objects.requireNonNull(outputStream, "outputStream required");
+    }
+
+    @Override
+    public Charset getCharset() {
+        return StandardCharsets.UTF_8;
     }
 
     @Override

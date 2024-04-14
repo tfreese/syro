@@ -1,6 +1,8 @@
 // Created: 04.10.2020
 package de.freese.syro.adapter;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import io.netty.buffer.ByteBuf;
@@ -15,6 +17,11 @@ public class ByteBufAdapter implements DataReader, DataWriter {
         super();
 
         this.byteBuf = Objects.requireNonNull(byteBuf, "byteBuf required");
+    }
+
+    @Override
+    public Charset getCharset() {
+        return StandardCharsets.UTF_8;
     }
 
     @Override

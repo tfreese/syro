@@ -2,6 +2,8 @@
 package de.freese.syro.adapter;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -14,6 +16,11 @@ public class ByteBufferAdapter implements DataReader, DataWriter {
         super();
 
         this.byteBuffer = Objects.requireNonNull(byteBuffer, "byteBuffer required");
+    }
+
+    @Override
+    public Charset getCharset() {
+        return StandardCharsets.UTF_8;
     }
 
     @Override
