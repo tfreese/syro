@@ -1,5 +1,6 @@
 plugins {
     id "java-library"
+    id "maven-publish"
     id "io.spring.dependency-management" version "$version_springDependencyManagement"
     id "name.remal.sonarlint" version "4.0.0"
     id "checkstyle"
@@ -67,6 +68,14 @@ test {
     useJUnitPlatform()
 
     finalizedBy jacocoTestReport
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 // https://checkstyle.sourceforge.io

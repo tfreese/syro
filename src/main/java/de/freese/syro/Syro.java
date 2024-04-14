@@ -21,7 +21,6 @@ import de.freese.syro.serializer.ExceptionSerializer;
 import de.freese.syro.serializer.FloatSerializer;
 import de.freese.syro.serializer.IntegerSerializer;
 import de.freese.syro.serializer.LongSerializer;
-import de.freese.syro.serializer.ObjectSerializer;
 import de.freese.syro.serializer.Serializer;
 import de.freese.syro.serializer.StackTraceElementSerializer;
 import de.freese.syro.serializer.StringSerializer;
@@ -88,7 +87,7 @@ public final class Syro<R, W> implements SerializerRegistry {
             Class<?> superClass = type.getSuperclass();
 
             while (superClass != null) {
-                serializer = this.serializers.get(type.getSuperclass());
+                serializer = this.serializers.get(superClass);
 
                 if (serializer != null) {
                     break;
@@ -109,8 +108,7 @@ public final class Syro<R, W> implements SerializerRegistry {
         }
 
         if (serializer == null) {
-            // throw new UnsupportedOperationException("no serializer found for type: " + type);
-            serializer = ObjectSerializer.getInstance();
+            throw new UnsupportedOperationException("no serializer found for type: " + type);
         }
 
         return (Serializer<S>) serializer;

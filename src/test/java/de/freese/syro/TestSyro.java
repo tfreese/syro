@@ -18,12 +18,17 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.junit.jupiter.api.Test;
 
+import de.freese.syro.serializer.ObjectSerializer;
+
+@SuppressWarnings("ALL")
 class TestSyro {
-    private static final int BUFFER_SIZE = 40960;
+    private static final int BUFFER_SIZE = 12 * 1024;
 
     @Test
     void testByteBuf() {
         final Syro<ByteBuf, ByteBuf> syro = Syro.ofByteBuf();
+        syro.register(Object.class, ObjectSerializer.getInstance());
+
         final ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer(BUFFER_SIZE);
 
         final Consumer<Object> writeConsumer = value -> {
@@ -42,6 +47,8 @@ class TestSyro {
     @Test
     void testByteBuffer() {
         final Syro<ByteBuffer, ByteBuffer> syro = Syro.ofByteBuffer();
+        syro.register(Object.class, ObjectSerializer.getInstance());
+
         final ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 
         final Consumer<Object> writeConsumer = value -> {
@@ -63,15 +70,17 @@ class TestSyro {
     @Test
     void testIoStream() {
         final Syro<InputStream, OutputStream> syro = Syro.ofIoStream();
+        syro.register(Object.class, ObjectSerializer.getInstance());
+
         final AtomicReference<byte[]> reference = new AtomicReference<>(null);
 
         final Consumer<Object> writeConsumer = value -> {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(BUFFER_SIZE);
             syro.write(outputStream, value);
             reference.set(outputStream.toByteArray());
         };
         final Consumer<Class<?>> writeNullConsumer = type -> {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(BUFFER_SIZE);
             syro.writeNull(outputStream, type);
             reference.set(outputStream.toByteArray());
         };
