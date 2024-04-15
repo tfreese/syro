@@ -1,5 +1,5 @@
 // Created: 22.09.2020
-package de.freese.syro.adapter;
+package de.freese.syro.io;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -9,10 +9,10 @@ import java.util.Objects;
 /**
  * @author Thomas Freese
  */
-public class ByteBufferAdapter implements DataReader, DataWriter {
+public class ByteBufferWriter implements DataWriter {
     private final ByteBuffer byteBuffer;
 
-    public ByteBufferAdapter(final ByteBuffer byteBuffer) {
+    public ByteBufferWriter(final ByteBuffer byteBuffer) {
         super();
 
         this.byteBuffer = Objects.requireNonNull(byteBuffer, "byteBuffer required");
@@ -21,39 +21,6 @@ public class ByteBufferAdapter implements DataReader, DataWriter {
     @Override
     public Charset getCharset() {
         return StandardCharsets.UTF_8;
-    }
-
-    @Override
-    public byte readByte() {
-        return byteBuffer.get();
-    }
-
-    @Override
-    public byte[] readBytes(final int length) {
-        final byte[] bytes = new byte[length];
-        byteBuffer.get(bytes);
-
-        return bytes;
-    }
-
-    @Override
-    public double readDouble() {
-        return byteBuffer.getDouble();
-    }
-
-    @Override
-    public float readFloat() {
-        return byteBuffer.getFloat();
-    }
-
-    @Override
-    public int readInteger() {
-        return byteBuffer.getInt();
-    }
-
-    @Override
-    public long readLong() {
-        return byteBuffer.getLong();
     }
 
     @Override

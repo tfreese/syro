@@ -1,8 +1,8 @@
 package de.freese.syro.serializer;
 
 import de.freese.syro.SerializerRegistry;
-import de.freese.syro.adapter.DataReader;
-import de.freese.syro.adapter.DataWriter;
+import de.freese.syro.io.DataReader;
+import de.freese.syro.io.DataWriter;
 
 public class StringSerializer implements Serializer<String> {
     @Override

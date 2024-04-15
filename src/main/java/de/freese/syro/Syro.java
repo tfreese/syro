@@ -10,11 +10,14 @@ import java.util.function.Function;
 
 import io.netty.buffer.ByteBuf;
 
-import de.freese.syro.adapter.ByteBufAdapter;
-import de.freese.syro.adapter.ByteBufferAdapter;
-import de.freese.syro.adapter.DataReader;
-import de.freese.syro.adapter.DataWriter;
-import de.freese.syro.adapter.IoStreamAdapter;
+import de.freese.syro.io.ByteBufReader;
+import de.freese.syro.io.ByteBufWriter;
+import de.freese.syro.io.ByteBufferReader;
+import de.freese.syro.io.ByteBufferWriter;
+import de.freese.syro.io.DataReader;
+import de.freese.syro.io.DataWriter;
+import de.freese.syro.io.InputStreamReader;
+import de.freese.syro.io.OutputStreamWriter;
 import de.freese.syro.serializer.BooleanSerializer;
 import de.freese.syro.serializer.DoubleSerializer;
 import de.freese.syro.serializer.ExceptionSerializer;
@@ -34,15 +37,15 @@ public final class Syro<R, W> implements SerializerRegistry {
     }
 
     public static Syro<ByteBuf, ByteBuf> ofByteBuf() {
-        return new Syro<>(ByteBufAdapter::new, ByteBufAdapter::new);
+        return new Syro<>(ByteBufReader::new, ByteBufWriter::new);
     }
 
     public static Syro<ByteBuffer, ByteBuffer> ofByteBuffer() {
-        return new Syro<>(ByteBufferAdapter::new, ByteBufferAdapter::new);
+        return new Syro<>(ByteBufferReader::new, ByteBufferWriter::new);
     }
 
     public static Syro<InputStream, OutputStream> ofIoStream() {
-        return new Syro<>(IoStreamAdapter::new, IoStreamAdapter::new);
+        return new Syro<>(InputStreamReader::new, OutputStreamWriter::new);
     }
 
     public static <I> Syro<I, Void> ofReader(final Function<I, DataReader> dataReaderWrapper) {

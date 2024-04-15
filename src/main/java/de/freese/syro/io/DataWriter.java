@@ -1,5 +1,5 @@
 // Created: 22.09.2020
-package de.freese.syro.adapter;
+package de.freese.syro.io;
 
 import java.nio.charset.Charset;
 
@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
  */
 public interface DataWriter {
     Charset getCharset();
-    
+
     default void writeBoolean(final boolean value) {
         writeByte((byte) (value ? 1 : 0));
     }

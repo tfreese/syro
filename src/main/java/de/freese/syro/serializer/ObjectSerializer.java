@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import de.freese.syro.SerializerRegistry;
-import de.freese.syro.adapter.DataReader;
-import de.freese.syro.adapter.DataWriter;
+import de.freese.syro.io.DataReader;
+import de.freese.syro.io.DataWriter;
 
 public final class ObjectSerializer implements Serializer<Object> {
     private static final class ObjectSerializerHolder {

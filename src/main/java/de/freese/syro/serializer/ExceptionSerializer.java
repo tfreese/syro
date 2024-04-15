@@ -5,8 +5,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
 import de.freese.syro.SerializerRegistry;
-import de.freese.syro.adapter.DataReader;
-import de.freese.syro.adapter.DataWriter;
+import de.freese.syro.io.DataReader;
+import de.freese.syro.io.DataWriter;
 
 public class ExceptionSerializer implements Serializer<Exception> {
     @Override

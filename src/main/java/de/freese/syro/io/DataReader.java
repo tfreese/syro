@@ -1,5 +1,5 @@
 // Created: 22.09.2020
-package de.freese.syro.adapter;
+package de.freese.syro.io;
 
 import java.nio.charset.Charset;
 
