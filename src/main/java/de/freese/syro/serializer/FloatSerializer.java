@@ -6,7 +6,7 @@ import de.freese.syro.io.DataWriter;
 
 public class FloatSerializer implements Serializer<Float> {
     @Override
-    public Float read(final SerializerRegistry registry, final DataReader reader, final Class<Float> type) {
+    public Float read(final SerializerRegistry registry, final DataReader reader) {
         return reader.readFloatOrNull();
     }
 

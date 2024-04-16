@@ -6,7 +6,7 @@ import de.freese.syro.io.DataWriter;
 
 public class LongSerializer implements Serializer<Long> {
     @Override
-    public Long read(final SerializerRegistry registry, final DataReader reader, final Class<Long> type) {
+    public Long read(final SerializerRegistry registry, final DataReader reader) {
         return reader.readLongOrNull();
     }
 

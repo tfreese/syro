@@ -10,7 +10,7 @@ import de.freese.syro.io.DataWriter;
 
 public class ExceptionSerializer implements Serializer<Exception> {
     @Override
-    public Exception read(final SerializerRegistry registry, final DataReader reader, final Class<Exception> type) {
+    public Exception read(final SerializerRegistry registry, final DataReader reader) {
         final String clazzName = reader.readString();
         final String message = reader.readString();
         final int stackTraceLength = reader.readInteger();
@@ -19,28 +19,25 @@ public class ExceptionSerializer implements Serializer<Exception> {
         final StackTraceElement[] stackTrace = new StackTraceElement[stackTraceLength];
 
         for (int i = 0; i < stackTrace.length; i++) {
-            stackTrace[i] = stackTraceElementSerializer.read(registry, reader, StackTraceElement.class);
+            stackTrace[i] = stackTraceElementSerializer.read(registry, reader);
         }
 
         Exception exception = null;
 
         try {
-            //            // final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            //            // final Class<? extends Exception> clazz = (Class<? extends Exception>) classLoader.loadClass(clazzName);
-            //            // final Class<? extends Exception> clazz = (Class<? extends Exception>) Class.forName(clazzName, true, classLoader);
-            final Class<? extends Exception> clazz = (Class<? extends Exception>) Class.forName(clazzName);
-            //            final Constructor<? extends Exception> constructor = clazz.getDeclaredConstructor(String.class);
-            //
-            //            exception = constructor.newInstance(message);
+            // A look-up that can find public constructors/methods.
+            final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
 
-            // A look-up that can find public methods.
-            final MethodHandles.Lookup publicMethodHandlesLookup = MethodHandles.publicLookup();
+            //            final Constructor<?> constructor = clazz.getDeclaredConstructor(String.class);
+            //            exception = constructor.newInstance(message);
+            // final Class<? extends Exception> clazz = (Class<? extends Exception>) Class.forName(clazzName);
+            final Class<?> clazz = lookup.findClass(clazzName);
 
             // Search for method that: have return type of void (Constructor) and accept a String parameter.
             final MethodType methodType = MethodType.methodType(void.class, String.class);
 
             // Find the constructor based on the MethodType defined above.
-            final MethodHandle invokableClassConstructor = publicMethodHandlesLookup.findConstructor(clazz, methodType);
+            final MethodHandle invokableClassConstructor = lookup.findConstructor(clazz, methodType);
 
             // Create an instance of the Invokable class by calling the exact handle, pass in the param value.
             exception = (Exception) invokableClassConstructor.invokeWithArguments(message);

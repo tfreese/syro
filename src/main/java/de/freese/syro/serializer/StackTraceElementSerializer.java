@@ -10,7 +10,7 @@ import de.freese.syro.io.DataWriter;
  */
 public class StackTraceElementSerializer implements Serializer<StackTraceElement> {
     @Override
-    public StackTraceElement read(final SerializerRegistry registry, final DataReader reader, final Class<StackTraceElement> type) {
+    public StackTraceElement read(final SerializerRegistry registry, final DataReader reader) {
         final String classLoaderName = reader.readString();
         final String moduleName = reader.readString();
         final String moduleVersion = reader.readString();

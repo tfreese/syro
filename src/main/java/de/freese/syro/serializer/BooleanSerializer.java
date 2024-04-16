@@ -6,7 +6,7 @@ import de.freese.syro.io.DataWriter;
 
 public class BooleanSerializer implements Serializer<Boolean> {
     @Override
-    public Boolean read(final SerializerRegistry registry, final DataReader reader, final Class<Boolean> type) {
+    public Boolean read(final SerializerRegistry registry, final DataReader reader) {
         return reader.readBooleanOrNull();
     }
 

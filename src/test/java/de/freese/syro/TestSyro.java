@@ -1,135 +1,147 @@
 package de.freese.syro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Point;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.stream.Stream;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import org.junit.jupiter.api.Test;
+import io.netty.buffer.UnpooledByteBufAllocator;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import de.freese.syro.serializer.ObjectSerializer;
+import de.freese.syro.io.ByteBufReader;
+import de.freese.syro.io.ByteBufWriter;
+import de.freese.syro.io.ByteBufferReader;
+import de.freese.syro.io.ByteBufferWriter;
+import de.freese.syro.io.DataReader;
+import de.freese.syro.io.DataWriter;
+import de.freese.syro.io.InputStreamReader;
+import de.freese.syro.io.OutputStreamWriter;
+import de.freese.syro.serializer.ReflectionSerializer;
 
 @SuppressWarnings("ALL")
 class TestSyro {
-    private static final int BUFFER_SIZE = 12 * 1024;
+    private static final int BUFFER_SIZE = 1024 * 18;
 
-    @Test
-    void testByteBuf() {
-        final Syro<ByteBuf, ByteBuf> syro = Syro.ofByteBuf();
-        syro.register(Object.class, ObjectSerializer.getInstance());
+    private static final DataHolder DATA_HOLDER_BYTE_BUF = new DataHolder() {
+        private final ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer(BUFFER_SIZE);
 
-        final ByteBuf buffer = ByteBufAllocator.DEFAULT.directBuffer(BUFFER_SIZE);
+        @Override
+        public DataReader createReader() {
+            return new ByteBufReader(buffer);
+        }
 
-        final Consumer<Object> writeConsumer = value -> {
+        @Override
+        public DataWriter createWriter() {
             buffer.clear();
-            syro.write(buffer, value);
-        };
-        final Consumer<Class<?>> writeNullConsumer = type -> {
-            buffer.clear();
-            syro.writeNull(buffer, type);
-        };
-        final Function<Class<?>, Object> readerFunction = type -> syro.read(buffer, type);
 
-        test(writeConsumer, writeNullConsumer, readerFunction);
-    }
+            return new ByteBufWriter(buffer);
+        }
+    };
 
-    @Test
-    void testByteBuffer() {
-        final Syro<ByteBuffer, ByteBuffer> syro = Syro.ofByteBuffer();
-        syro.register(Object.class, ObjectSerializer.getInstance());
+    private static final DataHolder DATA_HOLDER_BYTE_BUFFER = new DataHolder() {
+        private final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
-
-        final Consumer<Object> writeConsumer = value -> {
-            buffer.clear();
-            syro.write(buffer, value);
-        };
-        final Consumer<Class<?>> writeNullConsumer = type -> {
-            buffer.clear();
-            syro.writeNull(buffer, type);
-        };
-        final Function<Class<?>, Object> readerFunction = type -> {
+        @Override
+        public DataReader createReader() {
             buffer.flip();
-            return syro.read(buffer, type);
-        };
 
-        test(writeConsumer, writeNullConsumer, readerFunction);
+            return new ByteBufferReader(buffer);
+        }
+
+        @Override
+        public DataWriter createWriter() {
+            buffer.clear();
+
+            return new ByteBufferWriter(buffer);
+        }
+    };
+
+    private static final DataHolder DATA_HOLDER_OUTPUT_INPUT_STREAM = new DataHolder() {
+        private ByteArrayOutputStream outputStream;
+
+        @Override
+        public DataReader createReader() {
+            return new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()));
+        }
+
+        @Override
+        public DataWriter createWriter() {
+            outputStream = new ByteArrayOutputStream(BUFFER_SIZE);
+
+            return new OutputStreamWriter(outputStream);
+        }
+    };
+
+    private interface DataHolder {
+        DataReader createReader();
+
+        DataWriter createWriter();
     }
 
-    @Test
-    void testIoStream() {
-        final Syro<InputStream, OutputStream> syro = Syro.ofIoStream();
-        syro.register(Object.class, ObjectSerializer.getInstance());
-
-        final AtomicReference<byte[]> reference = new AtomicReference<>(null);
-
-        final Consumer<Object> writeConsumer = value -> {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(BUFFER_SIZE);
-            syro.write(outputStream, value);
-            reference.set(outputStream.toByteArray());
-        };
-        final Consumer<Class<?>> writeNullConsumer = type -> {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(BUFFER_SIZE);
-            syro.writeNull(outputStream, type);
-            reference.set(outputStream.toByteArray());
-        };
-        final Function<Class<?>, Object> readerFunction = type -> syro.read(new ByteArrayInputStream(reference.get()), type);
-
-        test(writeConsumer, writeNullConsumer, readerFunction);
+    static Stream<Arguments> createArguments() {
+        return Stream.of(
+                Arguments.of("ByteBuf", new Syro(), DATA_HOLDER_BYTE_BUF),
+                Arguments.of("ByteBuffer", new Syro(), DATA_HOLDER_BYTE_BUFFER),
+                Arguments.of("InputOutputStream", new Syro(), DATA_HOLDER_OUTPUT_INPUT_STREAM)
+        );
     }
 
-    private void test(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
-        testString(writeConsumer, writeNullConsumer, readerFunction);
-        testBoolean(writeConsumer, writeNullConsumer, readerFunction);
-        testInteger(writeConsumer, writeNullConsumer, readerFunction);
-        testLong(writeConsumer, writeNullConsumer, readerFunction);
-        testFloat(writeConsumer, writeNullConsumer, readerFunction);
-        testDouble(writeConsumer, writeNullConsumer, readerFunction);
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testBoolean(final String name, final Syro syro, final DataHolder dataHolder) {
+        final DataWriter writer = dataHolder.createWriter();
+        syro.write(writer, null, Boolean.class);
+        syro.write(writer, true);
+        syro.write(writer, false);
 
-        testException(writeConsumer, writeNullConsumer, readerFunction);
-        testObject(writeConsumer, writeNullConsumer, readerFunction);
+        final DataReader reader = dataHolder.createReader();
+        assertNull(syro.read(reader, Boolean.class));
+        assertTrue(syro.read(reader, boolean.class));
+        assertFalse(syro.read(reader, boolean.class));
     }
 
-    private void testBoolean(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
-        writeConsumer.accept(true);
-        assertEquals(true, readerFunction.apply(Boolean.class));
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testDouble(final String name, final Syro syro, final DataHolder dataHolder) {
+        final DataWriter writer = dataHolder.createWriter();
+        syro.write(writer, null, Double.class);
+        syro.write(writer, 1D);
+        syro.write(writer, Double.valueOf(2D));
 
-        writeConsumer.accept(Boolean.FALSE);
-        assertEquals(Boolean.FALSE, readerFunction.apply(Boolean.class));
-
-        writeNullConsumer.accept(Boolean.class);
-        assertNull(readerFunction.apply(Boolean.class));
+        final DataReader reader = dataHolder.createReader();
+        assertNull(syro.read(reader, Double.class));
+        assertEquals(1D, syro.read(reader, double.class));
+        assertEquals(Double.valueOf(2D), syro.read(reader, Double.class));
     }
 
-    private void testDouble(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
-        writeConsumer.accept(1D);
-        assertEquals(1D, readerFunction.apply(Double.class));
-
-        writeConsumer.accept(Double.valueOf(2D));
-        assertEquals(Double.valueOf(2D), readerFunction.apply(Double.class));
-
-        writeNullConsumer.accept(Double.class);
-        assertNull(readerFunction.apply(Double.class));
-    }
-
-    private void testException(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
-        final Exception origin = new IOException("Test");
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testException(final String name, final Syro syro, final DataHolder dataHolder) {
+        final IOException origin = new IOException("Test");
         final StackTraceElement[] stackTraceOrigin = origin.getStackTrace();
 
-        writeConsumer.accept(origin);
+        final DataWriter writer = dataHolder.createWriter();
 
-        final Exception other = (Exception) readerFunction.apply(Exception.class);
+        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class, () -> syro.write(writer, origin));
+        assertNotNull(exception);
+        assertEquals("no serializer found for type: class java.io.IOException", exception.getMessage());
+
+        syro.write(writer, origin, Exception.class);
+
+        final DataReader reader = dataHolder.createReader();
+        final Exception other = syro.read(reader, Exception.class);
         final StackTraceElement[] stackTraceOther = other.getStackTrace();
 
         assertEquals(origin.getClass(), other.getClass());
@@ -143,54 +155,75 @@ class TestSyro {
         }
     }
 
-    private void testFloat(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
-        writeConsumer.accept(1F);
-        assertEquals(1F, readerFunction.apply(Float.class));
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testFloat(final String name, final Syro syro, final DataHolder dataHolder) {
+        final DataWriter writer = dataHolder.createWriter();
+        syro.write(writer, null, Float.class);
+        syro.write(writer, 1F);
+        syro.write(writer, Float.valueOf(2F));
 
-        writeConsumer.accept(Float.valueOf(2F));
-        assertEquals(Float.valueOf(2F), readerFunction.apply(Float.class));
-
-        writeNullConsumer.accept(Float.class);
-        assertNull(readerFunction.apply(Float.class));
+        final DataReader reader = dataHolder.createReader();
+        assertNull(syro.read(reader, Float.class));
+        assertEquals(1F, syro.read(reader, float.class));
+        assertEquals(Float.valueOf(2F), syro.read(reader, Float.class));
     }
 
-    private void testInteger(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
-        writeConsumer.accept(1);
-        assertEquals(1, readerFunction.apply(Integer.class));
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testInteger(final String name, final Syro syro, final DataHolder dataHolder) {
+        final DataWriter writer = dataHolder.createWriter();
+        syro.write(writer, null, Integer.class);
+        syro.write(writer, 1);
+        syro.write(writer, Integer.valueOf(2));
 
-        writeConsumer.accept(Integer.valueOf(2));
-        assertEquals(Integer.valueOf(2), readerFunction.apply(Integer.class));
-
-        writeNullConsumer.accept(Integer.class);
-        assertNull(readerFunction.apply(Integer.class));
+        final DataReader reader = dataHolder.createReader();
+        assertNull(syro.read(reader, Integer.class));
+        assertEquals(1, syro.read(reader, int.class));
+        assertEquals(Integer.valueOf(2), syro.read(reader, Integer.class));
     }
 
-    private void testLong(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
-        writeConsumer.accept(1L);
-        assertEquals(1L, readerFunction.apply(Long.class));
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testLong(final String name, final Syro syro, final DataHolder dataHolder) {
+        final DataWriter writer = dataHolder.createWriter();
+        syro.write(writer, null, Long.class);
+        syro.write(writer, 1L);
+        syro.write(writer, Long.valueOf(2L));
 
-        writeConsumer.accept(Long.valueOf(2L));
-        assertEquals(Long.valueOf(2L), readerFunction.apply(Long.class));
-
-        writeNullConsumer.accept(Long.class);
-        assertNull(readerFunction.apply(Long.class));
+        final DataReader reader = dataHolder.createReader();
+        assertNull(syro.read(reader, Long.class));
+        assertEquals(1L, syro.read(reader, long.class));
+        assertEquals(Long.valueOf(2L), syro.read(reader, Long.class));
     }
 
-    private void testObject(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testObject(final String name, final Syro syro, final DataHolder dataHolder) {
+        syro.register(Point.class, new ReflectionSerializer<>());
+
         final Point point = new Point(1, 2);
-        writeConsumer.accept(point);
-        assertEquals(point, readerFunction.apply(Point.class));
+
+        final DataWriter writer = dataHolder.createWriter();
+        syro.write(writer, point);
+
+        final DataReader reader = dataHolder.createReader();
+        assertEquals(point, syro.read(reader, Point.class));
     }
 
-    private void testString(final Consumer<Object> writeConsumer, final Consumer<Class<?>> writeNullConsumer, final Function<Class<?>, Object> readerFunction) {
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testString(final String name, final Syro syro, final DataHolder dataHolder) {
         final String text = "abcABC123,.;:-_ÖÄÜöäü*'#+`?ß´987/()=?";
-        writeConsumer.accept(text);
-        assertEquals(text, readerFunction.apply(String.class));
 
-        writeConsumer.accept("");
-        assertEquals("", readerFunction.apply(String.class));
+        final DataWriter writer = dataHolder.createWriter();
+        syro.write(writer, null, String.class);
+        syro.write(writer, "");
+        syro.write(writer, text);
 
-        writeNullConsumer.accept(String.class);
-        assertNull(readerFunction.apply(String.class));
+        final DataReader reader = dataHolder.createReader();
+        assertNull(syro.read(reader, String.class));
+        assertEquals("", syro.read(reader, String.class));
+        assertEquals(text, syro.read(reader, String.class));
     }
 }

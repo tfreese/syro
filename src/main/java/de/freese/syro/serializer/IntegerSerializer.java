@@ -6,7 +6,7 @@ import de.freese.syro.io.DataWriter;
 
 public class IntegerSerializer implements Serializer<Integer> {
     @Override
-    public Integer read(final SerializerRegistry registry, final DataReader reader, final Class<Integer> type) {
+    public Integer read(final SerializerRegistry registry, final DataReader reader) {
         return reader.readIntegerOrNull();
     }
 

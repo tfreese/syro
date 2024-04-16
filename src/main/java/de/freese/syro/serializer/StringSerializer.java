@@ -6,7 +6,7 @@ import de.freese.syro.io.DataWriter;
 
 public class StringSerializer implements Serializer<String> {
     @Override
-    public String read(final SerializerRegistry registry, final DataReader reader, final Class<String> type) {
+    public String read(final SerializerRegistry registry, final DataReader reader) {
         return reader.readString();
     }
 

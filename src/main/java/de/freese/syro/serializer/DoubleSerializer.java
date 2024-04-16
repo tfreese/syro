@@ -6,7 +6,7 @@ import de.freese.syro.io.DataWriter;
 
 public class DoubleSerializer implements Serializer<Double> {
     @Override
-    public Double read(final SerializerRegistry registry, final DataReader reader, final Class<Double> type) {
+    public Double read(final SerializerRegistry registry, final DataReader reader) {
         return reader.readDoubleOrNull();
     }
 

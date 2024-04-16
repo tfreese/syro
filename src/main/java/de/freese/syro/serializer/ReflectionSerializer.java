@@ -1,5 +1,6 @@
 package de.freese.syro.serializer;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -10,29 +11,18 @@ import de.freese.syro.SerializerRegistry;
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
-public final class ObjectSerializer implements Serializer<Object> {
-    private static final class ObjectSerializerHolder {
-        private static final ObjectSerializer INSTANCE = new ObjectSerializer();
-
-        private ObjectSerializerHolder() {
-            super();
-        }
-    }
-
-    public static ObjectSerializer getInstance() {
-        return ObjectSerializerHolder.INSTANCE;
-    }
-
-    private ObjectSerializer() {
-        super();
-    }
-
+// @SuppressWarnings("java:S3011")
+public final class ReflectionSerializer<T> implements Serializer<T> {
     @Override
-    public Object read(final SerializerRegistry registry, final DataReader reader, final Class<Object> type) {
+    public T read(final SerializerRegistry registry, final DataReader reader) {
+        // A look-up that can find public constructors/methods.
+        final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+
         try {
             final String clazzName = reader.readString();
-            final Class<? extends Exception> clazz = (Class<? extends Exception>) Class.forName(clazzName);
-            final Constructor<? extends Exception> constructor = clazz.getDeclaredConstructor();
+            // final Class<?> clazz =  Class.forName(clazzName);
+            final Class<?> clazz = lookup.findClass(clazzName);
+            final Constructor<?> constructor = clazz.getDeclaredConstructor();
 
             final Object value = constructor.newInstance();
 
@@ -49,11 +39,15 @@ public final class ObjectSerializer implements Serializer<Object> {
 
                 final Field field = clazz.getDeclaredField(fieldName);
                 final Serializer<Object> fieldSerializer = (Serializer<Object>) registry.getSerializer(field.getType());
+                final Object fieldValue = fieldSerializer.read(registry, reader);
 
-                field.set(value, fieldSerializer.read(registry, reader, (Class<Object>) field.getType()));
+                field.set(value, fieldValue);
+
+                // final VarHandle varHandle = lookup.findVarHandle(clazz, fieldName, field.getType());
+                // varHandle.set(field.getType().cast(fieldValue)); // java.lang.ClassCastException: Cannot cast java.lang.Integer to int
             }
 
-            return value;
+            return (T) value;
         }
         catch (RuntimeException ex) {
             throw ex;
@@ -61,10 +55,13 @@ public final class ObjectSerializer implements Serializer<Object> {
         catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
+        catch (Throwable ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     @Override
-    public void write(final SerializerRegistry registry, final DataWriter writer, final Object value) {
+    public void write(final SerializerRegistry registry, final DataWriter writer, final T value) {
         try {
             final Class<?> type = value.getClass();
             writer.writeString(type.getName());
@@ -86,7 +83,6 @@ public final class ObjectSerializer implements Serializer<Object> {
                 writer.writeString(field.getName());
 
                 final Serializer<Object> serializer = (Serializer<Object>) registry.getSerializer(fieldValue.getClass());
-
                 serializer.write(registry, writer, fieldValue);
             }
         }
