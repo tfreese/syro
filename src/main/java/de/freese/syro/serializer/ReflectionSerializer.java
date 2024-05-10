@@ -55,9 +55,6 @@ public final class ReflectionSerializer<T> implements Serializer<T> {
         catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
-        catch (Throwable ex) {
-            throw new IllegalStateException(ex);
-        }
     }
 
     @Override

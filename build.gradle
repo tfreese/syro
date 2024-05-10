@@ -27,7 +27,6 @@ dependencies {
     testImplementation("io.netty:netty-buffer")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
 }
 
 java {
