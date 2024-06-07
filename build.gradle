@@ -265,7 +265,7 @@ sonarLint {
     isGeneratedCodeIgnored = true
 
     nodeJs {
-        detectNodeJs = false    // true forces very long time.
+        detectNodeJs = true    // If not exist, try to Download: https://nodejs.org/dist
         logNodeJsNotFound = false
     }
 
@@ -313,7 +313,9 @@ sonarLint {
                 // Cognitive Complexity of methods should not be too high.
                 "java:S3776",
                 // The Singleton design pattern should be used with care
-                "java:S6548"
+                "java:S6548",
+                // Don't use the query "SELECT *"
+                "java:S6905"
         )
 
         rule("java:S103") {
