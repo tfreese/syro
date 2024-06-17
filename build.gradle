@@ -36,6 +36,25 @@ dependencyManagement {
 //// Set group property for all Ant tasks.
 //tasks.matching { task -> task.name.startsWith("ant-") }.configureEach{ group = "Ant" }
 
+//// Dynamic Tasks
+// def apps = ["App1", "App2"]
+// def appProperties = [:]
+// appProperties["valueApp1"] = "app1-value"
+// appProperties["valueApp2"] = "app2-value"
+//
+// apps.each { app ->
+//     tasks.register("taskFor${app}") {
+//         group = "MyTasks"
+//         description "some generic task"
+//
+//         var value = "${appProperties."value$app"}"
+//
+//         doLast {
+//             logger.lifecycle("app value: {}", value)
+//         }
+//     }
+// }
+
 dependencies {
     //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     compileOnly("io.netty:netty-buffer")
