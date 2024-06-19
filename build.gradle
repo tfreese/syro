@@ -1,3 +1,18 @@
+// Execute Tasks in SubModule: gradle MODUL:clean build
+//buildscript {
+//    repositories {
+//        mavenLocal()
+//        mavenCentral()
+//        gradlePluginPortal()
+//    }
+//
+//    dependencies {
+//        classpath("io.spring.gradle:dependency-management-plugin:$version_springDependencyManagement")
+//    }
+//}
+//
+// or as alternative newer Variant
+//
 plugins {
     id "java-library"
     id "maven-publish"
@@ -7,6 +22,11 @@ plugins {
     id "jacoco"
 }
 
+// project.layout.buildDirectory = "target"
+//
+// apply from: "../dependencies.gradle"
+// apply from: "../dependencies.properties"
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -14,6 +34,7 @@ repositories {
 
 dependencyManagement {
     imports {
+        // mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         mavenBom("org.springframework.boot:spring-boot-dependencies:$version_springBoot")
     }
 
@@ -59,6 +80,9 @@ dependencies {
     //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     compileOnly("io.netty:netty-buffer")
 
+    // JARs aus libs-Folder.
+    //implementation fileTree(dir: "libs", include: "*.jar")
+
     testImplementation("io.netty:netty-buffer")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -80,6 +104,7 @@ clean {
         })
     }
 }
+
 java {
     //sourceCompatibility = 22
     //targetCompatibility = 22
@@ -107,6 +132,13 @@ jar {
                 "Build-Version": project.version
         )
     }
+
+    // into "META-INF", {
+    //     from layout.projectDirectory.dir("src").dir("main").dir("xsd")
+    // }
+    // metaInf {
+    //     from layout.projectDirectory.dir("src").dir("main").dir("xsd")
+    // }
 }
 
 test {
@@ -162,7 +194,7 @@ test {
         }
     }
 
-    finalizedBy jacocoTestReport
+    finalizedBy("jacocoTestReport")
 }
 
 javadoc {
@@ -248,6 +280,7 @@ def compilerArgs = [
 
 [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 [compileJava, compileTestJava]*.options*.debug = true
+// [compileJava, compileTestJava]*.options*.incremental = true
 // [compileJava, compileTestJava]*.options*.compilerArgs += compilerArgs
 
 tasks.compileJava {
@@ -264,6 +297,54 @@ tasks.compileTestJava {
 //         println "Compiler args: " + options.compilerArgs
 //     }
 // }
+
+tasks.register("sourcesJar", Jar) {
+    group = "MyTasks"
+    description = "Creates a jar from the source files."
+
+    dependsOn("classes")
+
+    getArchiveClassifier().set("sources")
+    from sourceSets.main.allSource
+}
+
+tasks.register("testJar", Jar) {
+    group = "MyTasks"
+    description = "Creates a jar from the test files."
+
+    dependsOn("testClasses")
+
+    getArchiveClassifier().set("test")
+    from sourceSets.test.output
+}
+
+tasks.register("testSourcesJar", Jar) {
+    group = "MyTasks"
+    description = "Creates a jar from the test-source files."
+
+    dependsOn("testClasses")
+
+    getArchiveClassifier().set("test-sources")
+    from sourceSets.test.allSource
+}
+
+tasks.register("javadocJar", Jar) {
+    group = "MyTasks"
+    description = "Creates a jar from the javadoc files."
+
+    dependsOn("javadoc")
+
+    getArchiveClassifier().set("javadoc")
+    from javadoc.destinationDir
+}
+
+// Merge Artefacts.
+artifacts {
+    archives sourcesJar
+    archives testJar
+    archives testSourcesJar
+    archives javadocJar
+}
 
 publishing {
     publications {
