@@ -50,6 +50,12 @@ dependencyManagement {
 // configurations.configureEach {
 //     exclude group: "ch.qos.logback", module: "logback-classic"
 // }
+// configurations.all {
+//     exclude group: "ch.qos.logback", module: "logback-classic"
+// }
+// configurations.testImplementation {
+//     exclude group: "ch.qos.logback", module: "logback-classic"
+// }
 
 //// Register ANT-Tasks as Gradle-Tasks with Prefix "ant-" in Group "other".
 //ant.importBuild("ant_build.xml") { antTargetName -> "ant-" + antTargetName }
