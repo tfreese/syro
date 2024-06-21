@@ -71,6 +71,7 @@ dependencyResolutionManagement {
 // buildCache {
 //     local {
 //         directory = new File("/tmp", "build-cache")
+//         removeUnusedEntriesAfterDays = 30
 //     }
 // }
 
