@@ -351,14 +351,36 @@ artifacts {
     archives testJar
     archives testSourcesJar
     archives javadocJar
+
+    // archives file: "A-sources.jar", name: "A", type: "jar", classifier: "sources"
 }
 
 publishing {
     publications {
         maven(MavenPublication) {
             from components.java
+
+            // artifact sourcesJar
+            // artifact("macos-app-x64.dmg") {
+            //     classifier "macos-x64"
+            //     extension "dmg"
+            // }
+            // artifact("windows-app-x64.exe") {
+            //     classifier "windows-x64"
+            //     extension "exe"
+            // }
         }
     }
+    // repositories {
+    //     maven {
+    //         name "deploy"
+    //         url deployRepoUrl
+    //         credentials {
+    //             username = deployRepoUsername
+    //             password = deployRepoPassword
+    //         }
+    //     }
+    // }
 }
 
 // https://checkstyle.sourceforge.io
@@ -460,4 +482,12 @@ sonarLint {
     // ruleParameter("java:S119", "format", "^[A-Z][a-zA-Z0-9]*$")
 
     // ignoredPaths.add("**/demo/FailsafeDemo.java")
+}
+
+// For Composite Build.
+tasks.register("cleanAll", GradleBuild) {
+    tasks = ["clean"]
+}
+tasks.register("buildAll", GradleBuild) {
+    tasks = ["build"]
 }
