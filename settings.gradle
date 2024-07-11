@@ -1,7 +1,7 @@
 // Can not be configured by Conventions-Plugin.
 pluginManagement {
     repositories {
-        mavenLocal()
+        // mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -68,30 +68,20 @@ dependencyResolutionManagement {
 
 // include "syro-core"
 
-// buildCache {
-//     local {
-//         directory = new File("/tmp", "build-cache")
-//         removeUnusedEntriesAfterDays = 30
-//     }
-// }
-
-// init.gradle
+// https://docs.gradle.org/8.8/userguide/directory_layout.html
+// GRADLE_HOME/init.d/cache-settings.gradle
+// GRADLE_USER_HOME/init.gradle
 // beforeSettings { settings ->
 //     settings.caches {
-//         releasedWrappers.removeUnusedEntriesAfterDays = 45
-//         snapshotWrappers.removeUnusedEntriesAfterDays = 10
-//         downloadedResources.removeUnusedEntriesAfterDays = 45
-//         createdResources.removeUnusedEntriesAfterDays = 10
-//         buildCache.removeUnusedEntriesAfterDays = 5
-//     }
-// }
+//         cleanup = Cleanup.ALWAYS // Cleanup is performed at the end of each build session.
+//         cleanup = Cleanup.DEFAULT // Cleanup is performed periodically in the background (currently once every 24 hours).
+//         cleanup = Cleanup.DISABLED
 //
-// beforeSettings {
-//     caches {
-//         // cleanup = Cleanup.DISABLED
-//         // cleanup = Cleanup.ALWAYS  // Cleanup is performed at the end of each build session, this can be expensive.
-//         cleanup = Cleanup.DEFAULT    // Cleanup is performed periodically in the background (currently once every 24 hours).
-//         buildCache.setRemoveUnusedEntriesAfterDays(30)
+//         releasedWrappers.removeUnusedEntriesAfterDays = 5
+//         snapshotWrappers.removeUnusedEntriesAfterDays = 5
+//         downloadedResources.removeUnusedEntriesAfterDays = 7
+//         createdResources.removeUnusedEntriesAfterDays = 7
+//         // buildCache.removeUnusedEntriesAfterDays = 3 // >= 8.8
 //     }
 // }
 
