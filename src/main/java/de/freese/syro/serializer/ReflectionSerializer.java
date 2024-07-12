@@ -13,6 +13,7 @@ import de.freese.syro.io.DataWriter;
 
 // @SuppressWarnings("java:S3011")
 public final class ReflectionSerializer<T> implements Serializer<T> {
+    @SuppressWarnings("unchecked")
     @Override
     public T read(final SerializerRegistry registry, final DataReader reader) {
         // A look-up that can find public constructors/methods.
@@ -57,6 +58,7 @@ public final class ReflectionSerializer<T> implements Serializer<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void write(final SerializerRegistry registry, final DataWriter writer, final T value) {
         try {

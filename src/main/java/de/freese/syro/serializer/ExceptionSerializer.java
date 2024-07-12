@@ -15,9 +15,10 @@ public class ExceptionSerializer implements Serializer<Exception> {
         final String message = reader.readString();
         final int stackTraceLength = reader.readInteger();
 
-        final Serializer<StackTraceElement> stackTraceElementSerializer = registry.getSerializer(StackTraceElement.class);
         final StackTraceElement[] stackTrace = new StackTraceElement[stackTraceLength];
 
+        final Serializer<StackTraceElement> stackTraceElementSerializer = registry.getSerializer(StackTraceElement.class);
+        
         for (int i = 0; i < stackTrace.length; i++) {
             stackTrace[i] = stackTraceElementSerializer.read(registry, reader);
         }
@@ -28,8 +29,8 @@ public class ExceptionSerializer implements Serializer<Exception> {
             // A look-up that can find public constructors/methods.
             final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
 
-            //            final Constructor<?> constructor = clazz.getDeclaredConstructor(String.class);
-            //            exception = constructor.newInstance(message);
+            // final Constructor<?> constructor = clazz.getDeclaredConstructor(String.class);
+            // exception = constructor.newInstance(message);
             // final Class<? extends Exception> clazz = (Class<? extends Exception>) Class.forName(clazzName);
             final Class<?> clazz = lookup.findClass(clazzName);
 
@@ -56,9 +57,10 @@ public class ExceptionSerializer implements Serializer<Exception> {
         writer.writeString(value.getClass().getName());
         writer.writeString(value.getMessage());
 
-        final Serializer<StackTraceElement> stackTraceElementSerializer = registry.getSerializer(StackTraceElement.class);
         final StackTraceElement[] stackTrace = value.getStackTrace();
         writer.writeInteger(stackTrace.length);
+
+        final Serializer<StackTraceElement> stackTraceElementSerializer = registry.getSerializer(StackTraceElement.class);
 
         for (StackTraceElement stackTraceElement : stackTrace) {
             stackTraceElementSerializer.write(registry, writer, stackTraceElement);

@@ -483,6 +483,47 @@ sonarLint {
     // ignoredPaths.add("**/demo/FailsafeDemo.java")
 }
 
+// DefaultModuleComponentIdentifier
+def removeIf = { ModuleComponentIdentifier coordinate ->
+    if ("org.owasp.dependencycheck".equals(coordinate.getGroup())) {
+        // Ab 9.x wird ein Account benötigt.
+        if (!coordinate.getVersion().startsWith("8")) {
+            logger.lifecycle("ignored: {}", coordinate)
+            return true
+        }
+    }
+
+    def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> coordinate.getVersion().toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+
+    return !stableKeyword && !(coordinate.getVersion() ==~ regex)
+}
+tasks.named("dependencyUpdates").configure {
+    checkForGradleUpdate = false
+
+    rejectVersionIf {
+        removeIf(it.candidate)
+    }
+
+    outputFormatter = { result ->
+        def updatable = result.outdated.dependencies
+
+        if (!updatable.isEmpty()) {
+            logger.lifecycle("There are new updates:")
+
+            updatable.each { dependency ->
+                var newVersion = java.util.Optional.ofNullable(dependency.available.release)
+                        .or(() -> java.util.Optional.ofNullable(dependency.available.milestone))
+                        .or(() -> java.util.Optional.ofNullable(dependency.available.integration))
+                        .orElse("???")
+                logger.lifecycle("- {}:{}:{} -> {}", dependency.group, dependency.name, dependency.version, newVersion)
+            }
+        } else {
+            logger.lifecycle("No updates available.")
+        }
+    }
+}
+
 // For Composite Build.
 tasks.register("cleanAll", GradleBuild) {
     tasks = ["clean"]

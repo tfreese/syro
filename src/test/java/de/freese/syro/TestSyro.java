@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import io.netty.buffer.ByteBuf;
@@ -134,9 +135,9 @@ class TestSyro {
 
         final DataWriter writer = dataHolder.createWriter();
 
-        final UnsupportedOperationException exception = assertThrows(UnsupportedOperationException.class, () -> syro.write(writer, origin));
+        final Exception exception = assertThrows(IllegalArgumentException.class, () -> syro.write(writer, origin));
         assertNotNull(exception);
-        assertEquals("no serializer found for type: class java.io.IOException", exception.getMessage());
+        assertEquals("no serializer found for type: java.io.IOException", exception.getMessage());
 
         syro.write(writer, origin, Exception.class);
 
@@ -199,7 +200,21 @@ class TestSyro {
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testObject(final String name, final Syro syro, final DataHolder dataHolder) {
+    void testNotExist(final String name, final Syro syro, final DataHolder dataHolder) {
+        final DataWriter writer = dataHolder.createWriter();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> syro.write(writer, LocalDateTime.now()));
+        assertNotNull(exception);
+        assertEquals("no serializer found for type: java.time.LocalDateTime", exception.getMessage());
+
+        final DataReader reader = dataHolder.createReader();
+        exception = assertThrows(IllegalArgumentException.class, () -> syro.read(reader, LocalDateTime.class));
+        assertNotNull(exception);
+        assertEquals("no serializer found for type: java.time.LocalDateTime", exception.getMessage());
+    }
+
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("createArguments")
+    void testReflection(final String name, final Syro syro, final DataHolder dataHolder) {
         syro.register(Point.class, new ReflectionSerializer<>());
 
         final Point point = new Point(1, 2);

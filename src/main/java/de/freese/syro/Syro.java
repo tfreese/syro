@@ -93,7 +93,7 @@ public final class Syro implements SerializerRegistry {
         // }
 
         if (serializer == null) {
-            throw new UnsupportedOperationException("no serializer found for type: " + type);
+            throw new IllegalArgumentException("no serializer found for type: " + type.getName());
         }
 
         return (Serializer<S>) serializer;
