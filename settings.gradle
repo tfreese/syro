@@ -85,14 +85,14 @@ dependencyResolutionManagement {
 //         cleanup = Cleanup.DEFAULT // Cleanup is performed periodically in the background (currently once every 24 hours).
 //         cleanup = Cleanup.DISABLED
 //
-//         releasedWrappers.removeUnusedEntriesAfterDays = 5
-//         snapshotWrappers.removeUnusedEntriesAfterDays = 5
-//         downloadedResources.removeUnusedEntriesAfterDays = 7
-//         createdResources.removeUnusedEntriesAfterDays = 7
-//         buildCache.removeUnusedEntriesAfterDays = 3 // >= 8.8
+//         releasedWrappers.removeUnusedEntriesAfterDays = 45
+//         snapshotWrappers.removeUnusedEntriesAfterDays = 10
+//         downloadedResources.removeUnusedEntriesAfterDays = 45
+//         createdResources.removeUnusedEntriesAfterDays = 10
+//         buildCache.removeUnusedEntriesAfterDays = 5 // >= 8.8
 //
 //         // if (GradleVersion.current().equals(GradleVersion.version("8.9"))) {
-//         //     buildCache.removeUnusedEntriesAfterDays = 3
+//         //     buildCache.removeUnusedEntriesAfterDays = 5
 //         // }
 //     }
 // }
