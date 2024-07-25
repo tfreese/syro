@@ -226,9 +226,35 @@ tasks.register("listRepos") {
     description "Shows configured Repositories"
 
     doLast {
-        println "Repositories:"
+        println "Plugin Repositories:"
         project.buildscript.repositories.each { println "- " + it.properties.displayName }
+        // project.buildscript.repositories.getAsMap().forEach {
+        //     name, repo -> println("$name >> ${repo.properties.displayName}")
+        // }
+
+        println "Dependency Repositories:"
+        project.repositories.each { println "Name: " + it.name + "; url: " + it.url }
+
+        // project.buildscript.repositories.each { println "Name: " + it.name + "; url: " + it.url }
         // project.buildscript.repositories.each { println it.properties }
+
+        // project.buildscript.repositories.each {
+        //     if (it.properties.displayName == 'Gradle Central Plugin Repository') {
+        //         println "Name: " + it.displayName
+        //     } else {
+        //         println "Name: " + it.name + "; url: " + it.url
+        //     }
+        // }
+    }
+}
+
+tasks.register("listDependencies") {
+    group = "MyTasks"
+    description "Shows configured Dependencies"
+
+    doLast {
+        println "Dependencies:"
+        project.configurations.compileClasspath.each { println it }
     }
 }
 
