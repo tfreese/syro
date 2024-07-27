@@ -59,6 +59,7 @@ dependencyManagement {
 
 //// Register ANT-Tasks as Gradle-Tasks with Prefix "ant-" in Group "other".
 //ant.importBuild("ant_build.xml") { antTargetName -> "ant-" + antTargetName }
+//ant.properties["version"] = project.version
 //
 //// Set group property for all Ant tasks.
 //tasks.matching { task -> task.name.startsWith("ant-") }.configureEach{ group = "Ant" }
