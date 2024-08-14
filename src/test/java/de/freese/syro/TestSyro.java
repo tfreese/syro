@@ -201,8 +201,10 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testNotExist(final String name, final Syro syro, final DataHolder dataHolder) {
+        final LocalDateTime now = LocalDateTime.now();
+
         final DataWriter writer = dataHolder.createWriter();
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> syro.write(writer, LocalDateTime.now()));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> syro.write(writer, now));
         assertNotNull(exception);
         assertEquals("no serializer found for type: java.time.LocalDateTime", exception.getMessage());
 
