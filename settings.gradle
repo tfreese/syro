@@ -53,6 +53,9 @@ dependencyResolutionManagement {
         //     url<URL>
         //     name "my-ivy"
         //     patternLayout {
+        //         // ivy pattern supports transitive dependencies.
+        //         // ivy "app1/[organisation]/ivys/[artifact]-[revision].xml"
+        //         // ivy "app2/[organisation]/ivys/[artifact]-[revision].xml"
         //         artifact "app1/[organisation]/jars/[artifact]-[revision].[ext]"
         //         artifact "app2/[organisation]/jars/[artifact]-[revision].[ext]"
         //     }
@@ -60,7 +63,7 @@ dependencyResolutionManagement {
         //         artifact() // Only look for Jar.
         //     }
         //     content {
-        //         excludeGroup "or.orga"
+        //         excludeGroup "org.orga"
         //         excludeGroupByRegex("com\\..*")
         //         excludeGroupByRegex "io\\..*"
         //         excludeGroupByRegex "jakarta\\..*"
@@ -69,7 +72,7 @@ dependencyResolutionManagement {
         // }
         //
         // // Ivy Dependencies.
-        // implementation("app1:artifact:version") // app1/app1/jars/artifact-version.jar
+        // implementation("organisation:artifact:revision") // app1/organisation/jars/artifact-revision.jar
     }
     // A Single-Project need the Repositories in build.gradle.
 }
