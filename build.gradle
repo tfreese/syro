@@ -83,6 +83,21 @@ dependencyManagement {
 //     }
 // }
 
+// sourceSets {
+//     that.resources {
+//         srcDir layout.projectDirectory.dir("..").dir("that")
+//         include "file.ext"
+//     }
+//
+//     main {
+//         resources {
+//             srcDir(layout.projectDirectory.dir("..").dir("this"))
+//             srcDir(that.resources)
+//             srcDir(configurations.someArtifact)
+//         }
+//     }
+// }
+
 dependencies {
     //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     compileOnly("io.netty:netty-buffer")
