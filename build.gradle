@@ -62,7 +62,11 @@ dependencyManagement {
 //ant.properties["version"] = project.version
 //
 //// Set group property for all Ant tasks.
-//tasks.matching { task -> task.name.startsWith("ant-") }.configureEach{ group = "Ant" }
+//tasks.matching { task -> task.name.startsWith("ant-") }.configureEach{ group = "ant" }
+//
+// "ant-target" {
+//     ant.properties["version"] = version
+// }
 
 //// Dynamic Tasks
 // def apps = ["App1", "App2"]
