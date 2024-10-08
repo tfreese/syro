@@ -1,7 +1,7 @@
 // Can not be configured by Conventions-Plugin.
 pluginManagement {
     repositories {
-        // mavenLocal()
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -14,12 +14,9 @@ pluginManagement {
 //rootProject.name = "syro"
 
 dependencyResolutionManagement {
+    // A Single-Project can have the Repositories in build.gradle.
     repositories {
-        // mavenLocal() {
-        //     content {
-        //         includeGroupByRegex("de\\.freese\\..*")
-        //     }
-        // }
+        // mavenLocal()
         // mavenCentral()
         // maven {
         //     url "https://repository.primefaces.org"
@@ -77,7 +74,6 @@ dependencyResolutionManagement {
         // // Ivy Dependencies.
         // implementation("organisation:artifact:revision") // app1/organisation/jars/artifact-revision.jar
     }
-    // A Single-Project need the Repositories in build.gradle.
 }
 
 // include "syro-core"
