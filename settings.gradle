@@ -14,10 +14,12 @@ pluginManagement {
 //rootProject.name = "syro"
 
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
     // A Single-Project can have the Repositories in build.gradle.
     repositories {
-        // mavenLocal()
-        // mavenCentral()
+        mavenLocal()
+        mavenCentral()
         // maven {
         //     url "https://repository.primefaces.org"
         //     name "primefaces"

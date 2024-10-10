@@ -28,10 +28,10 @@ plugins {
 // apply from: "../dependencies.gradle"
 // apply from: "../dependencies.properties"
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
+// repositories {
+//     mavenLocal()
+//     mavenCentral()
+// }
 
 dependencyManagement {
     imports {
