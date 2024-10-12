@@ -13,70 +13,67 @@ pluginManagement {
 // Without rootProject.name the Name of the Projekt-Directory is used.
 //rootProject.name = "syro"
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-
-    // A Single-Project can have the Repositories in build.gradle.
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        // maven {
-        //     url "https://repository.primefaces.org"
-        //     name "primefaces"
-        //     content {
-        //         excludeGroupByRegex("de.freese\\..*")
-        //     }
-        //     mavenContent {
-        //         releasesOnly()
-        //         //snapshotsOnly()
-        //     }
-        //     metadataSources {
-        //         artifact()
-        //         mavenPom()
-        //     }
-        // }
-        // maven {
-        //     url "https://repo.gradle.org/gradle/libs-releases"
-        //     name "gradle-libs-releases"
-        //     content {
-        //         excludeGroupByRegex("de.freese\\..*")
-        //     }
-        //     mavenContent {
-        //         releasesOnly()
-        //         //snapshotsOnly()
-        //     }
-        // }
-        //
-        // flatDir {
-        //     dirs "libs"
-        // }
-        //
-        // ivy {
-        //     url<URL>
-        //     name "my-ivy"
-        //     patternLayout {
-        //         // ivy pattern supports transitive dependencies.
-        //         // ivy "app1/[organisation]/ivys/[artifact]-[revision].xml"
-        //         // ivy "app2/[organisation]/ivys/[artifact]-[revision].xml"
-        //         artifact "app1/[organisation]/jars/[artifact]-[revision].[ext]"
-        //         artifact "app2/[organisation]/jars/[artifact]-[revision].[ext]"
-        //     }
-        //     metadataSources {
-        //         artifact() // Only look for Jar.
-        //     }
-        //     content {
-        //         excludeGroup "org.orga"
-        //         excludeGroupByRegex("com\\..*")
-        //         excludeGroupByRegex "io\\..*"
-        //         excludeGroupByRegex "jakarta\\..*"
-        //         excludeGroupByRegex "org\\..*"
-        //     }
-        // }
-        //
-        // // Ivy Dependencies.
-        // implementation("organisation:artifact:revision") // app1/organisation/jars/artifact-revision.jar
-    }
-}
+// dependencyResolutionManagement {
+//     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+//
+//     // A Single-Project can have the Repositories in build.gradle.
+//     repositories {
+//         mavenLocal()
+//         mavenCentral()
+//         // maven {
+//         //     url "https://repository.primefaces.org"
+//         //     content {
+//         //         excludeGroupByRegex("de.freese\\..*")
+//         //     }
+//         //     mavenContent {
+//         //         releasesOnly()
+//         //         //snapshotsOnly()
+//         //     }
+//         //     metadataSources {
+//         //         artifact()
+//         //         mavenPom()
+//         //     }
+//         // }
+//         // maven {
+//         //     url "https://repo.gradle.org/gradle/libs-releases"
+//         //     content {
+//         //         excludeGroupByRegex("de.freese\\..*")
+//         //     }
+//         //     mavenContent {
+//         //         releasesOnly()
+//         //         //snapshotsOnly()
+//         //     }
+//         // }
+//         //
+//         // flatDir {
+//         //     dirs "libs"
+//         // }
+//         //
+//         // ivy {
+//         //     url<URL>
+//         //     patternLayout {
+//         //         // ivy pattern supports transitive dependencies.
+//         //         // ivy "app1/[organisation]/ivys/[artifact]-[revision].xml"
+//         //         // ivy "app2/[organisation]/ivys/[artifact]-[revision].xml"
+//         //         artifact "app1/[organisation]/jars/[artifact]-[revision].[ext]"
+//         //         artifact "app2/[organisation]/jars/[artifact]-[revision].[ext]"
+//         //     }
+//         //     metadataSources {
+//         //         artifact() // Only look for Jar.
+//         //     }
+//         //     content {
+//         //         excludeGroup "org.orga"
+//         //         excludeGroupByRegex("com\\..*")
+//         //         excludeGroupByRegex "io\\..*"
+//         //         excludeGroupByRegex "jakarta\\..*"
+//         //         excludeGroupByRegex "org\\..*"
+//         //     }
+//         // }
+//         //
+//         // // Ivy Dependencies.
+//         // implementation("organisation:artifact:revision") // app1/organisation/jars/artifact-revision.jar
+//     }
+// }
 
 // include "syro-core"
 
@@ -104,6 +101,4 @@ dependencyResolutionManagement {
 println(">>>>>>>>>")
 println("Gradle version: ${GradleVersion.current().version}")
 println("MaxWorkerCount: ${gradle.getStartParameter().getMaxWorkerCount()}")
-//println("ParallelThreadCount: ${gradle.getStartParameter().getParallelThreadCount()}")
 println(">>>>>>>>>")
-// project.getGradle()

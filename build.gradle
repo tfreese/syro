@@ -28,10 +28,10 @@ plugins {
 // apply from: "../dependencies.gradle"
 // apply from: "../dependencies.properties"
 
-// repositories {
-//     mavenLocal()
-//     mavenCentral()
-// }
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
 
 dependencyManagement {
     imports {
@@ -133,8 +133,8 @@ clean {
 }
 
 java {
-    //sourceCompatibility = 22
-    //targetCompatibility = 22
+    // sourceCompatibility = JavaVersion.VERSION_22
+    // targetCompatibility = JavaVersion.VERSION_22
 
     toolchain {
         languageVersion = JavaLanguageVersion.of(22)
@@ -401,10 +401,18 @@ artifacts {
     // archives file: "A-sources.jar", name: "A", type: "jar", classifier: "sources"
 }
 
+// https://docs.gradle.org/current/userguide/publishing_maven.html
 publishing {
     publications {
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
+
+            pom {
+                name = project.name
+                description = project.description
+
+                //...
+            }
 
             // artifact sourcesJar
             // artifact("macos-app-x64.dmg") {
@@ -416,11 +424,29 @@ publishing {
             //     extension "exe"
             // }
         }
+
+        // custom(MavenPublication) {
+        //     if (!fileTree(dir: "generated/reports", include: '**/*').empty) {
+        //         artifact customReport
+        //     }
+        //     if (another_condition) {
+        //         artifact anotherDistribution
+        //     }
+        //     if (yet_another_condition) {
+        //         artifact yetAnotherDistribution
+        //     }
+        //     ...
+        // }
     }
+
     // repositories {
     //     maven {
-    //         name "deploy"
-    //         url deployRepoUrl
+    //         def releasesRepoUrl = layout.buildDirectory.dir("repos/releases")
+    //         def snapshotsRepoUrl = layout.buildDirectory.dir("repos/snapshots")
+    //
+    //         url = project.hasProperty("release") ? releasesRepoUrl : snapshotsRepoUrl
+    //         allowInsecureProtocol = true
+    //
     //         credentials {
     //             username = deployRepoUsername
     //             password = deployRepoPassword
@@ -533,7 +559,7 @@ sonarLint {
 // DefaultModuleComponentIdentifier
 def removeIf = { ModuleComponentIdentifier coordinate ->
     if ("org.owasp.dependencycheck".equals(coordinate.getGroup())) {
-        // Ab 9.x wird ein Account benötigt.
+        // Since 9.x an Account is required.
         if (!coordinate.getVersion().startsWith("8")) {
             logger.lifecycle("ignored: {}", coordinate)
             return true
@@ -555,18 +581,20 @@ tasks.named("dependencyUpdates").configure {
     outputFormatter = { result ->
         def updatable = result.outdated.dependencies
 
-        if (!updatable.isEmpty()) {
-            logger.lifecycle("There are new updates:")
-
-            updatable.each { dependency ->
-                var newVersion = java.util.Optional.ofNullable(dependency.available.release)
-                        .or(() -> java.util.Optional.ofNullable(dependency.available.milestone))
-                        .or(() -> java.util.Optional.ofNullable(dependency.available.integration))
-                        .orElse("???")
-                logger.lifecycle("- {}:{}:{} -> {}", dependency.group, dependency.name, dependency.version, newVersion)
-            }
-        } else {
+        if (updatable.isEmpty()) {
             logger.lifecycle("No updates available.")
+
+            return
+        }
+
+        logger.lifecycle("There are new updates:")
+
+        updatable.each { dependency ->
+            var newVersion = java.util.Optional.ofNullable(dependency.available.release)
+                    .or(() -> java.util.Optional.ofNullable(dependency.available.milestone))
+                    .or(() -> java.util.Optional.ofNullable(dependency.available.integration))
+                    .orElse("???")
+            logger.lifecycle("{}:{}:{} -> {}", dependency.group, dependency.name, dependency.version, newVersion)
         }
     }
 }
