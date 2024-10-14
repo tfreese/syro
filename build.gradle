@@ -133,11 +133,11 @@ clean {
 }
 
 java {
-    // sourceCompatibility = JavaVersion.VERSION_22
-    // targetCompatibility = JavaVersion.VERSION_22
+    // sourceCompatibility = JavaVersion.VERSION_23
+    // targetCompatibility = JavaVersion.VERSION_23
 
     toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
+        languageVersion = JavaLanguageVersion.of(23)
         // vendor = JvmVendorSpec.ORACLE
         // implementation = JvmImplementation.J9
     }
