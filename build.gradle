@@ -58,6 +58,8 @@ dependencyManagement {
 //     exclude group: "ch.qos.logback", module: "logback-classic"
 // }
 
+// ant.lifecycleLogLevel = "INFO"
+//
 //// Register ANT-Tasks as Gradle-Tasks with Prefix "ant-" in Group "other".
 //ant.importBuild("ant_build.xml") { antTargetName -> "ant-" + antTargetName }
 //ant.properties["version"] = project.version
