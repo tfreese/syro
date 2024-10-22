@@ -20,58 +20,61 @@ pluginManagement {
 //     repositories {
 //         mavenLocal()
 //         mavenCentral()
-//         // maven {
-//         //     url "https://repository.primefaces.org"
-//         //     content {
-//         //         excludeGroupByRegex("de.freese\\..*")
-//         //     }
-//         //     mavenContent {
-//         //         releasesOnly()
-//         //         //snapshotsOnly()
-//         //     }
-//         //     metadataSources {
-//         //         artifact()
-//         //         mavenPom()
-//         //     }
-//         // }
-//         // maven {
-//         //     url "https://repo.gradle.org/gradle/libs-releases"
-//         //     content {
-//         //         excludeGroupByRegex("de.freese\\..*")
-//         //     }
-//         //     mavenContent {
-//         //         releasesOnly()
-//         //         //snapshotsOnly()
-//         //     }
-//         // }
-//         //
-//         // flatDir {
-//         //     dirs "libs"
-//         // }
-//         //
-//         // ivy {
-//         //     url<URL>
-//         //     patternLayout {
-//         //         // ivy pattern supports transitive dependencies.
-//         //         // ivy "app1/[organisation]/ivys/[artifact]-[revision].xml"
-//         //         // ivy "app2/[organisation]/ivys/[artifact]-[revision].xml"
-//         //         artifact "app1/[organisation]/jars/[artifact]-[revision].[ext]"
-//         //         artifact "app2/[organisation]/jars/[artifact]-[revision].[ext]"
-//         //     }
-//         //     metadataSources {
-//         //         artifact() // Only look for Jar.
-//         //     }
-//         //     content {
-//         //         excludeGroup "org.orga"
-//         //         excludeGroupByRegex("com\\..*")
-//         //         excludeGroupByRegex "io\\..*"
-//         //         excludeGroupByRegex "jakarta\\..*"
-//         //         excludeGroupByRegex "org\\..*"
-//         //     }
-//         // }
-//         //
-//         // // Ivy Dependencies.
-//         // implementation("organisation:artifact:revision") // app1/organisation/jars/artifact-revision.jar
+//         maven {
+//             url "https://repository.primefaces.org"
+//             content {
+//                 excludeGroupByRegex("de.freese\\..*")
+//             }
+//             mavenContent {
+//                 releasesOnly()
+//                 //snapshotsOnly()
+//             }
+//             metadataSources {
+//                 artifact()
+//                 mavenPom()
+//             }
+//         }
+//         maven {
+//             url "https://repo.gradle.org/gradle/libs-releases"
+//             content {
+//                 excludeGroupByRegex("de.freese\\..*")
+//             }
+//             mavenContent {
+//                 releasesOnly()
+//                 //snapshotsOnly()
+//             }
+//         }
+//
+//         flatDir {
+//             dirs("libs", "${rootProject.projectDir}/ohj")
+//         }
+//         // implementation(":help-share:12.1.3.0.0")
+//         // implementation(files("libs/a.jar", "libs/b.jar"))
+//         // implementation(fileTree(dir: "ohj", include: "*-12.1.3.0.0.jar"))
+//
+//         ivy {
+//             url<URL>
+//             patternLayout {
+//                 // ivy pattern supports transitive dependencies.
+//                 // ivy "app1/[organisation]/ivys/[artifact]-[revision].xml"
+//                 // ivy "app2/[organisation]/ivys/[artifact]-[revision].xml"
+//                 artifact "app1/[organisation]/jars/[artifact]-[revision].[ext]"
+//                 artifact "app2/[organisation]/jars/[artifact]-[revision].[ext]"
+//             }
+//             metadataSources {
+//                 artifact() // Only look for Jar.
+//             }
+//             content {
+//                 excludeGroup "org.orga"
+//                 excludeGroupByRegex("com\\..*")
+//                 excludeGroupByRegex "io\\..*"
+//                 excludeGroupByRegex "jakarta\\..*"
+//                 excludeGroupByRegex "org\\..*"
+//             }
+//         }
+//
+//         // Ivy Dependencies.
+//         implementation("organisation:artifact:revision") // app1/organisation/jars/artifact-revision.jar
 //     }
 // }
 

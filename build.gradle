@@ -119,7 +119,7 @@ dependencies {
 
 clean {
     doFirst {
-        def dirs = ["target", "bin"]
+        def dirs = ["bin", "logs", "out", "target"]
 
         dirs.each(dir -> {
             Directory directory = layout.projectDirectory.dir(dir)
