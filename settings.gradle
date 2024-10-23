@@ -22,6 +22,7 @@ pluginManagement {
 //         mavenCentral()
 //         maven {
 //             url "https://repository.primefaces.org"
+//             name "primefaces"
 //             content {
 //                 excludeGroupByRegex("de.freese\\..*")
 //             }
@@ -36,6 +37,7 @@ pluginManagement {
 //         }
 //         maven {
 //             url "https://repo.gradle.org/gradle/libs-releases"
+//             name "gradleLibsReleases"
 //             content {
 //                 excludeGroupByRegex("de.freese\\..*")
 //             }
@@ -46,14 +48,16 @@ pluginManagement {
 //         }
 //
 //         flatDir {
-//             dirs("libs", "${rootProject.projectDir}/ohj")
+//             dirs("libs", "ohj")
+//             //dirs("libs", "${rootProject.projectDir}/ohj")
 //         }
 //         // implementation(":help-share:12.1.3.0.0")
 //         // implementation(files("libs/a.jar", "libs/b.jar"))
 //         // implementation(fileTree(dir: "ohj", include: "*-12.1.3.0.0.jar"))
 //
 //         ivy {
-//             url<URL>
+//             url "<URL>"
+//             name "ivy"
 //             patternLayout {
 //                 // ivy pattern supports transitive dependencies.
 //                 // ivy "app1/[organisation]/ivys/[artifact]-[revision].xml"
