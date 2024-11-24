@@ -18,29 +18,23 @@ on:
         branches: [ "master" ]
 
 jobs:
-    prepare-build:
-        name: Prepare the Build
+    build:
+        name: Build the Project
         runs-on: ubuntu-latest
 
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
-                
-            -   name: Setup Gradle
-                uses: gradle/actions/setup-gradle@v4
 
-    build:
-        name: Build the Project
-        needs: prepare-build
-        runs-on: ubuntu-latest
-
-        steps:
             -   name: Setup Java
                 uses: actions/setup-java@v4
                 with:
                     java-version: "23"
                     distribution: "oracle"
                     architecture: x64
+
+            -   name: Setup Gradle
+                uses: gradle/actions/setup-gradle@v4
 
             -   name: Build with Gradle
                 run: ./gradlew build
