@@ -9,10 +9,19 @@
 # https://gradlehero.com/build-gradle-projects-with-github-actions/
 # https://github.com/tkgregory/gradle-github-actions-example
 
-#Variablen:
+#Variables:
 # ${{ github.workflow }}
 # ${{ github.workspace }}
 # path: '**/build/reports/'
+
+# https://docs.github.com/de/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow
+#
+# actions/upload-artifact@v4
+# Upload an Artifact to use it in another Job.
+
+# actions/download-artifact@v4
+# Download an Artifact from another Job and use it.
+
 
 name: Java CI with Gradle
 
@@ -34,7 +43,7 @@ jobs:
             -   name: Setup Java
                 uses: actions/setup-java@v4
                 with:
-                    java-version: "23"
+                    java-version: 23
                     distribution: "oracle"
                     architecture: x64
 
@@ -44,29 +53,56 @@ jobs:
             -   name: Build with Gradle
                 run: ./gradlew build
 
-    publish:
-        name: Publish some Artifacts
-        needs: build
-        runs-on: ubuntu-latest
-
-        steps:
             -   name: Publish Libs
                 uses: actions/upload-artifact@v4
                 with:
                     name: Packages
-                    path: 'build/libs/'
+                    path: build/libs/*
                     if-no-files-found: warn
+                    retention-days: 30
 
             -   name: Publish Test Report
                 uses: actions/upload-artifact@v4
                 with:
                     name: Test Report
-                    path: 'build/test-results/'
+                    path: build/test-results/**/*
                     if-no-files-found: warn
+                    retention-days: 30
 
             -   name: Publish Reports
                 uses: actions/upload-artifact@v4
                 with:
                     name: Reports
-                    path: 'build/reports/'
+                    path: build/reports/**/*
                     if-no-files-found: warn
+                    retention-days: 30
+
+#    publish:
+#        name: Publish some Artifacts
+#        needs: build
+#        runs-on: ubuntu-latest
+#
+#        steps:
+#            -   name: Publish Libs
+#                uses: actions/upload-artifact@v4
+#                with:
+#                    name: Packages
+#                    path: build/libs/*
+#                    if-no-files-found: warn
+#                    retention-days: 30
+#
+#            -   name: Publish Test Report
+#                uses: actions/upload-artifact@v4
+#                with:
+#                    name: Test Report
+#                    path: build/test-results/**/*
+#                    if-no-files-found: warn
+#                    retention-days: 30
+#
+#            -   name: Publish Reports
+#                uses: actions/upload-artifact@v4
+#                with:
+#                    name: Reports
+#                    path: build/reports/**/*
+#                    if-no-files-found: warn
+#                    retention-days: 30
