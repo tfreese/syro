@@ -9,11 +9,6 @@
 # https://gradlehero.com/build-gradle-projects-with-github-actions/
 # https://github.com/tkgregory/gradle-github-actions-example
 
-#Variables:
-# ${{ github.workflow }}
-# ${{ github.workspace }}
-# path: '**/build/reports/'
-
 # https://docs.github.com/de/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow
 #
 # actions/upload-artifact@v4
@@ -24,6 +19,7 @@
 
 
 name: Java CI with Gradle
+run-name: ${{ github.actor }} is testing out GitHub Actions
 
 on:
     push:
@@ -32,14 +28,31 @@ on:
         branches: [ "master" ]
 
 jobs:
-    build:
-        name: Build the Project
+    print-infos:
+        name: Printing some Information's
         #runs-on: ubuntu-latest
         runs-on: [ linux, x64 ]
 
         steps:
+            -   run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+            -   run: echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+            -   run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+    
+    build:
+        name: Build the Project
+        #runs-on: ubuntu-latest
+        runs-on: [ linux, x64 ]
+        needs: print-infos
+
+        steps:
             -   name: Checkout
                 uses: actions/checkout@v4
+
+            -   run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+            -   name: List files in the repository
+                run: |
+                    ls -hal ${{ github.workspace }}
+            -   run: echo "This job's status is ${{ job.status }}."
 
             -   name: Setup Java
                 uses: actions/setup-java@v4
@@ -81,34 +94,3 @@ jobs:
                     path: build/reports/**/*
                     if-no-files-found: warn
                     retention-days: 30
-
-#    publish:
-#        name: Publish some Artifacts
-#        needs: build
-#        #runs-on: ubuntu-latest
-#        runs-on: [ linux, x64 ]
-#
-#        steps:
-#            -   name: Publish Libs
-#                uses: actions/upload-artifact@v4
-#                with:
-#                    name: Packages
-#                    path: build/libs/*
-#                    if-no-files-found: warn
-#                    retention-days: 30
-#
-#            -   name: Publish Test Report
-#                uses: actions/upload-artifact@v4
-#                with:
-#                    name: Test Report
-#                    path: build/test-results/**/*
-#                    if-no-files-found: warn
-#                    retention-days: 30
-#
-#            -   name: Publish Reports
-#                uses: actions/upload-artifact@v4
-#                with:
-#                    name: Reports
-#                    path: build/reports/**/*
-#                    if-no-files-found: warn
-#                    retention-days: 30
