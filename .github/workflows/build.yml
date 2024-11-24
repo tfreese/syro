@@ -30,8 +30,8 @@ on:
 jobs:
     print-infos:
         name: Printing some Information's
-        #runs-on: ubuntu-latest
-        runs-on: [ linux, x64 ]
+        runs-on: ubuntu-latest
+        # runs-on: [ linux, x64 ]
 
         steps:
             -   run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
@@ -40,8 +40,8 @@ jobs:
     
     build:
         name: Build the Project
-        #runs-on: ubuntu-latest
-        runs-on: [ linux, x64 ]
+        runs-on: ubuntu-latest
+        # runs-on: [ linux, x64 ]
         needs: print-infos
 
         steps:
