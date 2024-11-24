@@ -1,0 +1,67 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-gradle
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# https://gradlehero.com/build-gradle-projects-with-github-actions/
+# https://github.com/tkgregory/gradle-github-actions-example
+
+name: Java CI with Gradle
+
+on:
+    push:
+        branches: [ "master" ]
+    pull_request:
+        branches: [ "master" ]
+
+jobs:
+    build:
+        name: Build the Project
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Setup Java
+                uses: actions/setup-java@v4
+                with:
+                    java-version: "23"
+                    distribution: "oracle"
+                    architecture: x64
+
+            -   name: Setup Gradle
+                uses: gradle/actions/setup-gradle@v4
+
+            -   name: Build with Gradle
+                run: ./gradlew build
+
+    publish:
+        name: Publish some Artifacts
+        needs: build
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Publish Libs
+                uses: actions/upload-artifact@v4
+                with:
+                    name: Packages
+                    path: build/libs
+                    if-no-files-found: warn
+
+            -   name: Publish Test Report
+                uses: actions/upload-artifact@v4
+                with:
+                    name: Test Report
+                    path: ~/**/build/test-results
+                    if-no-files-found: warn
+
+            -   name: Publish Reports
+                uses: actions/upload-artifact@v4
+                with:
+                    name: Reports
+                    path: ~/**/build/reports
+                    if-no-files-found: warn
