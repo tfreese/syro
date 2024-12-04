@@ -469,7 +469,7 @@ publishing {
 //
 //     configProperties.put("org.checkstyle.suppressionFilter", file("${System.getProperty('user.home')}/git/parents/config/checkstyle/suppressions.xml"))
 //
-//     ignoreFailures = false
+//     ignoreFailures = true
 //     showViolations = true
 // }
 //
