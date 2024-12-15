@@ -19,7 +19,7 @@ plugins {
     id "maven-publish"
     id "io.spring.dependency-management" version "$version_springDependencyManagement"
     id "name.remal.sonarlint" version "$version_nameRemalSonarlintPlugin"
-    // id "checkstyle"
+    id "checkstyle"
     id "jacoco"
 }
 
@@ -458,28 +458,28 @@ publishing {
 }
 
 // https://checkstyle.sourceforge.io
-// checkstyle {
-//     // toolVersion = "${versions.checkstyle}"
-//     toolVersion = "$version_checkstyle"
-//
-//     // Default Directory: <root>/config/checkstyle/
-//     configDirectory = file("${System.getProperty('user.home')}/git/parents/config/checkstyle")
-//     // configDirectory = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").asFile
-//     // configFile = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").file("checkstyle.xml").asFile
-//
-//     configProperties.put("org.checkstyle.suppressionFilter", file("${System.getProperty('user.home')}/git/parents/config/checkstyle/suppressions.xml"))
-//
-//     ignoreFailures = true
-//     showViolations = true
-// }
-//
-// tasks.withType(Checkstyle).configureEach {
-//     reports {
-//         xml.required = false
-//         html.required = true
-//         // html.stylesheet resources.text.fromFile('config/xsl/checkstyle-custom.xsl')
-//     }
-// }
+checkstyle {
+    // toolVersion = "${versions.checkstyle}"
+    toolVersion = "$version_checkstyle"
+
+    // Default Directory: <root>/config/checkstyle/
+    configDirectory = file("${System.getProperty('user.home')}/git/parents/config/checkstyle")
+    // configDirectory = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").asFile
+    // configFile = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").file("checkstyle.xml").asFile
+
+    configProperties.put("org.checkstyle.suppressionFilter", file("${System.getProperty('user.home')}/git/parents/config/checkstyle/suppressions.xml"))
+
+    ignoreFailures = true
+    showViolations = true
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        xml.required = false
+        html.required = true
+        // html.stylesheet resources.text.fromFile('config/xsl/checkstyle-custom.xsl')
+    }
+}
 
 // https://rules.sonarsource.com/java
 // https://github.com/remal-gradle-plugins/sonarlint
