@@ -181,6 +181,8 @@ test {
 
     jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 
+    systemProperty "java.awt.headless", "true"
+
     filter {
         // Deactivate Class
         // excludeTestsMatching "PACKAGE.CLASS"
