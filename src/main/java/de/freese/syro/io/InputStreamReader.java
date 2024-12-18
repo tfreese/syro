@@ -4,8 +4,6 @@ package de.freese.syro.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -18,11 +16,6 @@ public class InputStreamReader implements DataReader {
         super();
 
         this.inputStream = Objects.requireNonNull(inputStream, "inputStream required");
-    }
-
-    @Override
-    public Charset getCharset() {
-        return StandardCharsets.UTF_8;
     }
 
     @Override

@@ -4,8 +4,6 @@ package de.freese.syro.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -18,11 +16,6 @@ public class OutputStreamWriter implements DataWriter {
         super();
 
         this.outputStream = Objects.requireNonNull(outputStream, "outputStream required");
-    }
-
-    @Override
-    public Charset getCharset() {
-        return StandardCharsets.UTF_8;
     }
 
     @Override

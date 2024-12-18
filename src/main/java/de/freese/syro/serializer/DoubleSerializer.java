@@ -1,17 +1,32 @@
 package de.freese.syro.serializer;
 
-import de.freese.syro.SerializerRegistry;
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
-public class DoubleSerializer implements Serializer<Double> {
+public final class DoubleSerializer implements Serializer<Double> {
+    private static final class DoubleSerializerHolder {
+        private static final DoubleSerializer INSTANCE = new DoubleSerializer();
+
+        private DoubleSerializerHolder() {
+            super();
+        }
+    }
+
+    public static DoubleSerializer getInstance() {
+        return DoubleSerializerHolder.INSTANCE;
+    }
+
+    private DoubleSerializer() {
+        super();
+    }
+
     @Override
-    public Double read(final SerializerRegistry registry, final DataReader reader) {
+    public Double read(final DataReader reader) {
         return reader.readDoubleOrNull();
     }
 
     @Override
-    public void write(final SerializerRegistry registry, final DataWriter writer, final Double value) {
+    public void write(final DataWriter writer, final Double value) {
         writer.writeDoubleOrNull(value);
     }
 }

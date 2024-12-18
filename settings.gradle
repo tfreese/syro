@@ -13,13 +13,13 @@ pluginManagement {
 // Without rootProject.name the Name of the Projekt-Directory is used.
 //rootProject.name = "syro"
 
-// dependencyResolutionManagement {
-//     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 //
 //     // A Single-Project can have the Repositories in build.gradle.
-//     repositories {
-//         mavenLocal()
-//         mavenCentral()
+    repositories {
+        mavenLocal()
+        mavenCentral()
 //         maven {
 //             url "https://repository.primefaces.org"
 //             name "primefaces"
@@ -79,8 +79,8 @@ pluginManagement {
 //
 //         // Ivy Dependencies.
 //         implementation("organisation:artifact:revision") // app1/organisation/jars/artifact-revision.jar
-//     }
-// }
+    }
+}
 
 // include "syro-core"
 

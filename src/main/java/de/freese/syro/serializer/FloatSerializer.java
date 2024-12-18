@@ -1,17 +1,32 @@
 package de.freese.syro.serializer;
 
-import de.freese.syro.SerializerRegistry;
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
-public class FloatSerializer implements Serializer<Float> {
+public final class FloatSerializer implements Serializer<Float> {
+    private static final class FloatSerializerHolder {
+        private static final FloatSerializer INSTANCE = new FloatSerializer();
+
+        private FloatSerializerHolder() {
+            super();
+        }
+    }
+
+    public static FloatSerializer getInstance() {
+        return FloatSerializerHolder.INSTANCE;
+    }
+
+    private FloatSerializer() {
+        super();
+    }
+
     @Override
-    public Float read(final SerializerRegistry registry, final DataReader reader) {
+    public Float read(final DataReader reader) {
         return reader.readFloatOrNull();
     }
 
     @Override
-    public void write(final SerializerRegistry registry, final DataWriter writer, final Float value) {
+    public void write(final DataWriter writer, final Float value) {
         writer.writeFloatOrNull(value);
     }
 }

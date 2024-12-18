@@ -2,12 +2,15 @@
 package de.freese.syro.io;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Thomas Freese
  */
 public interface DataReader {
-    Charset getCharset();
+    default Charset getCharset() {
+        return StandardCharsets.UTF_8;
+    }
 
     default boolean readBoolean() {
         return readByte() == 1;

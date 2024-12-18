@@ -4,23 +4,38 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-import de.freese.syro.SerializerRegistry;
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
-public class ExceptionSerializer implements Serializer<Exception> {
+public final class ExceptionSerializer implements Serializer<Exception> {
+    private static final class ExceptionSerializerHolder {
+        private static final ExceptionSerializer INSTANCE = new ExceptionSerializer();
+
+        private ExceptionSerializerHolder() {
+            super();
+        }
+    }
+
+    public static ExceptionSerializer getInstance() {
+        return ExceptionSerializerHolder.INSTANCE;
+    }
+
+    private ExceptionSerializer() {
+        super();
+    }
+
     @Override
-    public Exception read(final SerializerRegistry registry, final DataReader reader) {
+    public Exception read(final DataReader reader) {
         final String clazzName = reader.readString();
         final String message = reader.readString();
         final int stackTraceLength = reader.readInteger();
 
         final StackTraceElement[] stackTrace = new StackTraceElement[stackTraceLength];
 
-        final Serializer<StackTraceElement> stackTraceElementSerializer = registry.getSerializer(StackTraceElement.class);
-        
+        final Serializer<StackTraceElement> stackTraceElementSerializer = StackTraceElementSerializer.getInstance();
+
         for (int i = 0; i < stackTrace.length; i++) {
-            stackTrace[i] = stackTraceElementSerializer.read(registry, reader);
+            stackTrace[i] = stackTraceElementSerializer.read(reader);
         }
 
         Exception exception = null;
@@ -53,17 +68,17 @@ public class ExceptionSerializer implements Serializer<Exception> {
     }
 
     @Override
-    public void write(final SerializerRegistry registry, final DataWriter writer, final Exception value) {
+    public void write(final DataWriter writer, final Exception value) {
         writer.writeString(value.getClass().getName());
         writer.writeString(value.getMessage());
 
         final StackTraceElement[] stackTrace = value.getStackTrace();
         writer.writeInteger(stackTrace.length);
 
-        final Serializer<StackTraceElement> stackTraceElementSerializer = registry.getSerializer(StackTraceElement.class);
+        final Serializer<StackTraceElement> stackTraceElementSerializer = StackTraceElementSerializer.getInstance();
 
         for (StackTraceElement stackTraceElement : stackTrace) {
-            stackTraceElementSerializer.write(registry, writer, stackTraceElement);
+            stackTraceElementSerializer.write(writer, stackTraceElement);
         }
     }
 }

@@ -1,7 +1,6 @@
 // Created: 24.09.2020
 package de.freese.syro.serializer;
 
-import de.freese.syro.SerializerRegistry;
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
@@ -9,7 +8,7 @@ import de.freese.syro.io.DataWriter;
  * @author Thomas Freese
  */
 public interface Serializer<T> {
-    T read(SerializerRegistry registry, DataReader reader);
+    T read(DataReader reader);
 
-    void write(SerializerRegistry registry, DataWriter writer, T value);
+    void write(DataWriter writer, T value);
 }

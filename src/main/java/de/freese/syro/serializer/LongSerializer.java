@@ -1,17 +1,32 @@
 package de.freese.syro.serializer;
 
-import de.freese.syro.SerializerRegistry;
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
-public class LongSerializer implements Serializer<Long> {
+public final class LongSerializer implements Serializer<Long> {
+    private static final class LongSerializerHolder {
+        private static final LongSerializer INSTANCE = new LongSerializer();
+
+        private LongSerializerHolder() {
+            super();
+        }
+    }
+
+    public static LongSerializer getInstance() {
+        return LongSerializerHolder.INSTANCE;
+    }
+
+    private LongSerializer() {
+        super();
+    }
+
     @Override
-    public Long read(final SerializerRegistry registry, final DataReader reader) {
+    public Long read(final DataReader reader) {
         return reader.readLongOrNull();
     }
 
     @Override
-    public void write(final SerializerRegistry registry, final DataWriter writer, final Long value) {
+    public void write(final DataWriter writer, final Long value) {
         writer.writeLongOrNull(value);
     }
 }

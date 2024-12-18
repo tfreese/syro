@@ -2,9 +2,7 @@ package de.freese.syro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Point;
@@ -12,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import io.netty.buffer.ByteBuf;
@@ -29,7 +26,14 @@ import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 import de.freese.syro.io.InputStreamReader;
 import de.freese.syro.io.OutputStreamWriter;
-import de.freese.syro.serializer.ReflectionSerializer;
+import de.freese.syro.serializer.BooleanSerializer;
+import de.freese.syro.serializer.DoubleSerializer;
+import de.freese.syro.serializer.ExceptionSerializer;
+import de.freese.syro.serializer.FloatSerializer;
+import de.freese.syro.serializer.IntegerSerializer;
+import de.freese.syro.serializer.LongSerializer;
+import de.freese.syro.serializer.Serializer;
+import de.freese.syro.serializer.StringSerializer;
 
 @SuppressWarnings("ALL")
 class TestSyro {
@@ -93,60 +97,61 @@ class TestSyro {
 
     static Stream<Arguments> createArguments() {
         return Stream.of(
-                Arguments.of("ByteBuf", new Syro(), DATA_HOLDER_BYTE_BUF),
-                Arguments.of("ByteBuffer", new Syro(), DATA_HOLDER_BYTE_BUFFER),
-                Arguments.of("InputOutputStream", new Syro(), DATA_HOLDER_OUTPUT_INPUT_STREAM)
+                Arguments.of("ByteBuf", DATA_HOLDER_BYTE_BUF),
+                Arguments.of("ByteBuffer", DATA_HOLDER_BYTE_BUFFER),
+                Arguments.of("InputOutputStream", DATA_HOLDER_OUTPUT_INPUT_STREAM)
         );
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testBoolean(final String name, final Syro syro, final DataHolder dataHolder) {
+    void testBoolean(final String name, final DataHolder dataHolder) {
+        Serializer<Boolean> serializer = BooleanSerializer.getInstance();
+
         final DataWriter writer = dataHolder.createWriter();
-        syro.write(writer, null, Boolean.class);
-        syro.write(writer, true);
-        syro.write(writer, false);
+        serializer.write(writer, null);
+        serializer.write(writer, true);
+        serializer.write(writer, false);
 
         final DataReader reader = dataHolder.createReader();
-        assertNull(syro.read(reader, Boolean.class));
-        assertTrue(syro.read(reader, boolean.class));
-        assertFalse(syro.read(reader, boolean.class));
+        assertNull(serializer.read(reader));
+        assertTrue(serializer.read(reader));
+        assertFalse(serializer.read(reader));
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testDouble(final String name, final Syro syro, final DataHolder dataHolder) {
+    void testDouble(final String name, final DataHolder dataHolder) {
+        Serializer<Double> serializer = DoubleSerializer.getInstance();
+
         final DataWriter writer = dataHolder.createWriter();
-        syro.write(writer, null, Double.class);
-        syro.write(writer, 1D);
-        syro.write(writer, Double.valueOf(2D));
+        serializer.write(writer, null);
+        serializer.write(writer, 1D);
+        serializer.write(writer, Double.valueOf(2D));
 
         final DataReader reader = dataHolder.createReader();
-        assertNull(syro.read(reader, Double.class));
-        assertEquals(1D, syro.read(reader, double.class));
-        assertEquals(Double.valueOf(2D), syro.read(reader, Double.class));
+        assertNull(serializer.read(reader));
+        assertEquals(1D, serializer.read(reader));
+        assertEquals(Double.valueOf(2D), serializer.read(reader));
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testException(final String name, final Syro syro, final DataHolder dataHolder) {
-        final IOException origin = new IOException("Test");
-        final StackTraceElement[] stackTraceOrigin = origin.getStackTrace();
+    void testException(final String name, final DataHolder dataHolder) {
+        Serializer<Exception> serializer = ExceptionSerializer.getInstance();
+
+        final IOException exception = new IOException("Test");
+        final StackTraceElement[] stackTraceOrigin = exception.getStackTrace();
 
         final DataWriter writer = dataHolder.createWriter();
-
-        final Exception exception = assertThrows(IllegalArgumentException.class, () -> syro.write(writer, origin));
-        assertNotNull(exception);
-        assertEquals("no serializer found for type: java.io.IOException", exception.getMessage());
-
-        syro.write(writer, origin, Exception.class);
+        serializer.write(writer, exception);
 
         final DataReader reader = dataHolder.createReader();
-        final Exception other = syro.read(reader, Exception.class);
+        final Exception other = serializer.read(reader);
         final StackTraceElement[] stackTraceOther = other.getStackTrace();
 
-        assertEquals(origin.getClass(), other.getClass());
-        assertEquals(origin.getMessage(), other.getMessage());
+        assertEquals(exception.getClass(), other.getClass());
+        assertEquals(exception.getMessage(), other.getMessage());
         assertEquals(stackTraceOrigin.length, stackTraceOther.length);
 
         for (int i = 0; i < stackTraceOrigin.length; i++) {
@@ -158,89 +163,95 @@ class TestSyro {
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testFloat(final String name, final Syro syro, final DataHolder dataHolder) {
+    void testFloat(final String name, final DataHolder dataHolder) {
+        Serializer<Float> serializer = FloatSerializer.getInstance();
+
         final DataWriter writer = dataHolder.createWriter();
-        syro.write(writer, null, Float.class);
-        syro.write(writer, 1F);
-        syro.write(writer, Float.valueOf(2F));
+        serializer.write(writer, null);
+        serializer.write(writer, 1F);
+        serializer.write(writer, Float.valueOf(2F));
 
         final DataReader reader = dataHolder.createReader();
-        assertNull(syro.read(reader, Float.class));
-        assertEquals(1F, syro.read(reader, float.class));
-        assertEquals(Float.valueOf(2F), syro.read(reader, Float.class));
+        assertNull(serializer.read(reader));
+        assertEquals(1F, serializer.read(reader));
+        assertEquals(Float.valueOf(2F), serializer.read(reader));
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testInteger(final String name, final Syro syro, final DataHolder dataHolder) {
+    void testInteger(final String name, final DataHolder dataHolder) {
+        Serializer<Integer> serializer = IntegerSerializer.getInstance();
+
         final DataWriter writer = dataHolder.createWriter();
-        syro.write(writer, null, Integer.class);
-        syro.write(writer, 1);
-        syro.write(writer, Integer.valueOf(2));
+        serializer.write(writer, null);
+        serializer.write(writer, 1);
+        serializer.write(writer, Integer.valueOf(2));
 
         final DataReader reader = dataHolder.createReader();
-        assertNull(syro.read(reader, Integer.class));
-        assertEquals(1, syro.read(reader, int.class));
-        assertEquals(Integer.valueOf(2), syro.read(reader, Integer.class));
+        assertNull(serializer.read(reader));
+        assertEquals(1, serializer.read(reader));
+        assertEquals(Integer.valueOf(2), serializer.read(reader));
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testLong(final String name, final Syro syro, final DataHolder dataHolder) {
+    void testLong(final String name, final DataHolder dataHolder) {
+        Serializer<Long> serializer = LongSerializer.getInstance();
+
         final DataWriter writer = dataHolder.createWriter();
-        syro.write(writer, null, Long.class);
-        syro.write(writer, 1L);
-        syro.write(writer, Long.valueOf(2L));
+        serializer.write(writer, null);
+        serializer.write(writer, 1L);
+        serializer.write(writer, Long.valueOf(2L));
 
         final DataReader reader = dataHolder.createReader();
-        assertNull(syro.read(reader, Long.class));
-        assertEquals(1L, syro.read(reader, long.class));
-        assertEquals(Long.valueOf(2L), syro.read(reader, Long.class));
+        assertNull(serializer.read(reader));
+        assertEquals(1L, serializer.read(reader));
+        assertEquals(Long.valueOf(2L), serializer.read(reader));
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testNotExist(final String name, final Syro syro, final DataHolder dataHolder) {
-        final LocalDateTime now = LocalDateTime.now();
+    void testPoint(final String name, final DataHolder dataHolder) {
+        Serializer<Point> serializer = new Serializer<Point>() {
+            @Override
+            public Point read(final DataReader reader) {
+                int x = reader.readInteger();
+                int y = reader.readInteger();
 
-        final DataWriter writer = dataHolder.createWriter();
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> syro.write(writer, now));
-        assertNotNull(exception);
-        assertEquals("no serializer found for type: java.time.LocalDateTime", exception.getMessage());
+                return new Point(x, y);
+            }
 
-        final DataReader reader = dataHolder.createReader();
-        exception = assertThrows(IllegalArgumentException.class, () -> syro.read(reader, LocalDateTime.class));
-        assertNotNull(exception);
-        assertEquals("no serializer found for type: java.time.LocalDateTime", exception.getMessage());
-    }
-
-    @ParameterizedTest(name = "{index} -> {0}")
-    @MethodSource("createArguments")
-    void testReflection(final String name, final Syro syro, final DataHolder dataHolder) {
-        syro.register(Point.class, new ReflectionSerializer<>());
+            @Override
+            public void write(final DataWriter writer, final Point value) {
+                writer.writeInteger(value.x);
+                writer.writeInteger(value.y);
+            }
+        };
 
         final Point point = new Point(1, 2);
 
         final DataWriter writer = dataHolder.createWriter();
-        syro.write(writer, point);
+        serializer.write(writer, point);
 
         final DataReader reader = dataHolder.createReader();
-        assertEquals(point, syro.read(reader, Point.class));
+        assertEquals(point, serializer.read(reader));
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
-    void testString(final String name, final Syro syro, final DataHolder dataHolder) {
+    void testString(final String name, final DataHolder dataHolder) {
+        Serializer<String> serializer = StringSerializer.getInstance();
+
         final String text = "abcABC123,.;:-_ÖÄÜöäü*'#+`?ß´987/()=?";
 
         final DataWriter writer = dataHolder.createWriter();
-        syro.write(writer, null, String.class);
-        syro.write(writer, "");
-        syro.write(writer, text);
+        serializer.write(writer, null);
+        serializer.write(writer, "");
+        serializer.write(writer, text);
 
         final DataReader reader = dataHolder.createReader();
-        assertNull(syro.read(reader, String.class));
-        assertEquals("", syro.read(reader, String.class));
-        assertEquals(text, syro.read(reader, String.class));
+        assertNull(serializer.read(reader));
+        assertEquals("", serializer.read(reader));
+        assertEquals(text, serializer.read(reader));
     }
 }

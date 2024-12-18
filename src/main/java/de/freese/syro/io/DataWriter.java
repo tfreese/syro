@@ -2,12 +2,15 @@
 package de.freese.syro.io;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Thomas Freese
  */
 public interface DataWriter {
-    Charset getCharset();
+    default Charset getCharset() {
+        return StandardCharsets.UTF_8;
+    }
 
     default void writeBoolean(final boolean value) {
         writeByte((byte) (value ? 1 : 0));

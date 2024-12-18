@@ -1,16 +1,31 @@
 // Created: 24.09.2020
 package de.freese.syro.serializer;
 
-import de.freese.syro.SerializerRegistry;
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
 /**
  * @author Thomas Freese
  */
-public class StackTraceElementSerializer implements Serializer<StackTraceElement> {
+public final class StackTraceElementSerializer implements Serializer<StackTraceElement> {
+    private static final class StackTraceElementSerializerHolder {
+        private static final StackTraceElementSerializer INSTANCE = new StackTraceElementSerializer();
+
+        private StackTraceElementSerializerHolder() {
+            super();
+        }
+    }
+
+    public static StackTraceElementSerializer getInstance() {
+        return StackTraceElementSerializerHolder.INSTANCE;
+    }
+
+    private StackTraceElementSerializer() {
+        super();
+    }
+
     @Override
-    public StackTraceElement read(final SerializerRegistry registry, final DataReader reader) {
+    public StackTraceElement read(final DataReader reader) {
         final String classLoaderName = reader.readString();
         final String moduleName = reader.readString();
         final String moduleVersion = reader.readString();
@@ -23,7 +38,7 @@ public class StackTraceElementSerializer implements Serializer<StackTraceElement
     }
 
     @Override
-    public void write(final SerializerRegistry registry, final DataWriter writer, final StackTraceElement value) {
+    public void write(final DataWriter writer, final StackTraceElement value) {
         writer.writeString(value.getClassLoaderName());
         writer.writeString(value.getModuleName());
         writer.writeString(value.getModuleVersion());

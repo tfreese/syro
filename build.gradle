@@ -23,15 +23,32 @@ plugins {
     id "jacoco"
 }
 
+clean {
+    doFirst {
+        def dirs = ["bin", "logs", "out", "target"]
+
+        dirs.each(dir -> {
+            Directory directory = layout.projectDirectory.dir(dir)
+
+            if (directory.getAsFile().exists()) {
+                // println("delete: " + directory)
+                logger.lifecycle("delete: {}", directory)
+                // delete fileTree(directory).include("**/*")
+                delete directory
+            }
+        })
+    }
+}
+
 // project.layout.buildDirectory = "target"
 //
 // apply from: "../dependencies.gradle"
 // apply from: "../dependencies.properties"
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
+// repositories {
+//     mavenLocal()
+//     mavenCentral()
+// }
 
 dependencyManagement {
     imports {
@@ -45,7 +62,7 @@ dependencyManagement {
 }
 
 // def versions = [:]
-// versions["checkstyle"] = "10.17.0"
+// versions["checkstyle"] = "10.21.0"
 // ext.set("versions", versions)
 
 // configurations.configureEach {
@@ -115,23 +132,6 @@ dependencies {
     testImplementation("io.netty:netty-buffer")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-clean {
-    doFirst {
-        def dirs = ["bin", "logs", "out", "target"]
-
-        dirs.each(dir -> {
-            Directory directory = layout.projectDirectory.dir(dir)
-
-            if (directory.getAsFile().exists()) {
-                // println("delete: " + directory)
-                logger.lifecycle("delete: {}", directory)
-                // delete fileTree(directory).include("**/*")
-                delete directory
-            }
-        })
-    }
 }
 
 java {
@@ -465,11 +465,12 @@ checkstyle {
     toolVersion = "$version_checkstyle"
 
     // Default Directory: <root>/config/checkstyle/
-    configDirectory = file("${System.getProperty('user.home')}/git/parents/config/checkstyle")
+    var basePath = providers.systemProperty("user.home").get() + "/git/parents/config/checkstyle"
+    configDirectory = file(basePath)
     // configDirectory = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").asFile
     // configFile = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").file("checkstyle.xml").asFile
 
-    configProperties.put("org.checkstyle.suppressionFilter", file("${System.getProperty('user.home')}/git/parents/config/checkstyle/suppressions.xml"))
+    configProperties.put("org.checkstyle.suppressionFilter", file(basePath + "/suppressions.xml"))
 
     ignoreFailures = true
     showViolations = true
@@ -490,7 +491,7 @@ sonarLint {
     isGeneratedCodeIgnored = true
 
     nodeJs {
-        detectNodeJs = true    // If not exist, try to Download: https://nodejs.org/dist
+        detectNodeJs = false    // If not exist, try to Download: https://nodejs.org/dist
         logNodeJsNotFound = false
     }
 
@@ -527,20 +528,14 @@ sonarLint {
                 "java:S135",
                 // Mergeable "if" statements should be combined.
                 "java:S1066",
-                // Refactor your code to get this URI from a customizable parameter.
-                "java:S1075",
                 // Catch Exception instead of Throwable.
                 "java:S1181",
                 //  Define a constant instead of duplicating this literal.
                 "java:S1192",
-                // Invoke method(s) only conditionally. (Logger)
-                "java:S2629",
                 // Cognitive Complexity of methods should not be too high.
                 "java:S3776",
                 // The Singleton design pattern should be used with care
-                "java:S6548",
-                // Don't use the query "SELECT *"
-                "java:S6905"
+                "java:S6548"
         )
 
         rule("java:S103") {
