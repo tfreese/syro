@@ -19,7 +19,7 @@ plugins {
     id "maven-publish"
     id "io.spring.dependency-management" version "$version_springDependencyManagement"
     id "name.remal.sonarlint" version "$version_nameRemalSonarlintPlugin"
-    id "checkstyle"
+    // id "checkstyle"
     id "jacoco"
 }
 
@@ -460,21 +460,21 @@ publishing {
 }
 
 // https://checkstyle.sourceforge.io
-checkstyle {
-    // toolVersion = "${versions.checkstyle}"
-    toolVersion = "$version_checkstyle"
-
-    // Default Directory: <root>/config/checkstyle/
-    var basePath = providers.systemProperty("user.home").get() + "/git/parents/config/checkstyle"
-    configDirectory = file(basePath)
-    // configDirectory = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").asFile
-    // configFile = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").file("checkstyle.xml").asFile
-
-    configProperties.put("org.checkstyle.suppressionFilter", file(basePath + "/suppressions.xml"))
-
-    ignoreFailures = true
-    showViolations = true
-}
+// checkstyle {
+//     // toolVersion = "${versions.checkstyle}"
+//     toolVersion = "$version_checkstyle"
+//
+//     // Default Directory: <root>/config/checkstyle/
+//     var basePath = providers.systemProperty("user.home").get() + "/git/parents/config/checkstyle"
+//     configDirectory = file(basePath)
+//     // configDirectory = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").asFile
+//     // configFile = layout.projectDirectory.dir("..").dir("..").dir("config").dir("checkstyle").file("checkstyle.xml").asFile
+//
+//     configProperties.put("org.checkstyle.suppressionFilter", file(basePath + "/suppressions.xml"))
+//
+//     ignoreFailures = true
+//     showViolations = true
+// }
 
 tasks.withType(Checkstyle).configureEach {
     reports {
