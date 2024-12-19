@@ -248,7 +248,7 @@ javadoc {
 
 tasks.register("listRepos") {
     group = "MyTasks"
-    description "Shows configured Repositories"
+    description = "Shows configured Repositories"
 
     doLast {
         println "Plugin Repositories:"
@@ -275,7 +275,7 @@ tasks.register("listRepos") {
 
 tasks.register("listDependencies") {
     group = "MyTasks"
-    description "Shows configured Dependencies"
+    description = "Shows configured Dependencies"
 
     doLast {
         println "Dependencies:"

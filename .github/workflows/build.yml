@@ -22,8 +22,9 @@ name: Java CI with Gradle
 run-name: ${{ github.actor }} is testing out GitHub Actions
 
 on:
-    workflow_dispatch:
     # Manual Trigger
+    workflow_dispatch:
+    # Push Trigger
     push:
         branches: [ "master" ]
     pull_request:
