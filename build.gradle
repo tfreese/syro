@@ -170,6 +170,20 @@ jar {
     // }
 }
 
+// Reproducible Build.
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    dirPermissions {
+        unix("rwxr-xr-x")
+        // unix(0755)
+    }
+    filePermissions {
+        unix("rw-r--r--")
+        // unix(0644)
+    }
+}
+
 test {
     enabled = true
     ignoreFailures = false
