@@ -43,9 +43,19 @@ jobs:
     
     build:
         name: Build the Project
-        runs-on: ubuntu-latest
-        # runs-on: [ linux, x64 ]
         needs: print-infos
+        # runs-on: ubuntu-latest
+        # runs-on: [ linux, x64 ]
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                include:
+                    -   os: ubuntu-latest
+                        gradle: ./gradlew
+                    -   os: windows-latest
+                        gradle: gradlew
+                    -   os: macos-latest
+                        gradle: ./gradlew
 
         steps:
             -   name: Checkout
@@ -72,7 +82,8 @@ jobs:
                 run: chmod 755 gradlew
 
             -   name: Build with Gradle
-                run: ./gradlew build
+                # run: ./gradlew build
+                run: ${{ matrix.gradle }} build
 
             -   name: Publish Libs
                 uses: actions/upload-artifact@v4
