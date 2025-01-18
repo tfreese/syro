@@ -1,22 +1,8 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-gradle
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
+# https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-gradle
 # https://gradlehero.com/build-gradle-projects-with-github-actions/
 # https://github.com/tkgregory/gradle-github-actions-example
-
 # https://docs.github.com/de/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow
 #
-# actions/upload-artifact@v4
-# Upload an Artifact to use it in another Job.
-
-# actions/download-artifact@v4
-# Download an Artifact from another Job and use it.
-
 
 name: Java CI with Gradle
 run-name: ${{ github.actor }} is testing out GitHub Actions
@@ -44,28 +30,33 @@ jobs:
     build:
         name: Build the Project
         needs: print-infos
-        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ ubuntu-latest , windows-latest, macos-latest ]
+                include:
+                    -   os: ubuntu-latest
+                        gradle: ./gradlew
+                    -   os: windows-latest
+                        gradle: gradlew
+                    -   os: macos-latest
+                        gradle: ./gradlew
+        runs-on: ${{ matrix.os }}
+        #runs-on: ubuntu-latest
         #        runs-on: [ linux, x64 ]
         #        runs-on: ${{ matrix.os }}
-        #        strategy:
-        #            matrix:
-        #                include:
-        #                    -   os: ubuntu-latest
-        #                        gradle: ./gradlew
-        #                    -   os: windows-latest
-        #                        gradle: gradlew
-        #                    -   os: macos-latest
-        #                        gradle: ./gradlew
 
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
 
             -   run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+            -   run: echo "This job's status is ${{ job.status }}."
+
             -   name: List files in the repository
+                if: runner.os != "Windows"
                 run: |
                     ls -hal ${{ github.workspace }}
-            -   run: echo "This job's status is ${{ job.status }}."
 
             -   name: Setup Java
                 uses: actions/setup-java@v4
@@ -73,22 +64,36 @@ jobs:
                     java-version: 23
                     distribution: "oracle"
                     architecture: x64
+                    cache: "gradle" # Preserve ~/.gradle Cache over Jobs.
 
-            # Create a persistent Cache for the Jobs.
-            #-   name: Setup Gradle
-            #    uses: gradle/actions/setup-gradle@v4
+            # Preserve ~/.gradle Cache over Jobs.
+            #            -   name: Setup Gradle
+            #                uses: gradle/actions/setup-gradle@v4
+            #                with:
+            #                    gradle-version: “8.12“
+
+            -   name: Validate Gradle Wrapper
+                uses: gradle/actions/wrapper-validation@v3
 
             -   name: Make Wrapper executable
-                run: chmod 755 gradlew
+                #if: runner.os != "Windows"
+                shell: bash
+                #run: chmod 755 gradlew
+                run: |
+                    if [ "${{ runner.os }}" = "Windows" ]; then
+                       echo "Not necessary on Windows."
+                    else
+                        chmod 755 gradlew
+                    fi
 
             -   name: Build with Gradle
-                run: ./gradlew build
-            #                run: ${{ matrix.gradle }} build
+                #                run: ./gradlew build
+                run: ${{ matrix.gradle }} build
 
             -   name: Publish Libs
                 uses: actions/upload-artifact@v4
                 with:
-                    name: Packages
+                    name: dependencies
                     path: build/libs/*
                     if-no-files-found: warn
                     retention-days: 30
@@ -96,7 +101,7 @@ jobs:
             -   name: Publish Test Reports
                 uses: actions/upload-artifact@v4
                 with:
-                    name: Test Reports
+                    name: reports-test
                     path: build/test-results/**/*.xml
                     if-no-files-found: warn
                     retention-days: 30
@@ -104,7 +109,12 @@ jobs:
             -   name: Publish Reports
                 uses: actions/upload-artifact@v4
                 with:
-                    name: Reports
+                    name: reports
                     path: build/reports/**/*
                     if-no-files-found: warn
                     retention-days: 30
+
+#            -   name: Get Reports
+#                uses: actions/download-artifact@v4
+#                with:
+#                    name: reports
