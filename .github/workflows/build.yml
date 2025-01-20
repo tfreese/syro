@@ -54,7 +54,7 @@ jobs:
             -   run: echo "This job's status is ${{ job.status }}."
 
             -   name: List files in the repository
-                if: runner.os != "Windows"
+                if: runner.os != 'Windows'
                 run: |
                     ls -hal ${{ github.workspace }}
 
