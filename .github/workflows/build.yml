@@ -38,7 +38,7 @@ jobs:
                     -   os: ubuntu-latest
                         gradle: ./gradlew
                     -   os: windows-latest
-                        gradle: gradlew.bat
+                        gradle: ./gradlew.bat
                     -   os: macos-latest
                         gradle: ./gradlew
         runs-on: ${{ matrix.os }}
