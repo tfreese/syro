@@ -43,8 +43,6 @@ jobs:
                         gradle: ./gradlew
         runs-on: ${{ matrix.os }}
         #runs-on: ubuntu-latest
-        #        runs-on: [ linux, x64 ]
-        #        runs-on: ${{ matrix.os }}
 
         steps:
             -   name: Checkout
@@ -94,7 +92,7 @@ jobs:
             -   name: Publish Libs
                 uses: actions/upload-artifact@v4
                 with:
-                    name: dependencies_${{ runner.os }}
+                    name: libs_${{ runner.os }}
                     path: build/libs/*
                     if-no-files-found: warn
                     retention-days: 30
