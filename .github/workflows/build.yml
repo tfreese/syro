@@ -16,6 +16,9 @@ on:
     pull_request:
         branches: [ "master" ]
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
     print-infos:
         name: Printing some Information's
@@ -76,6 +79,7 @@ jobs:
 
             -   name: Make Wrapper executable
                 #if: runner.os != 'Windows'
+                #if: contains(matrix.image, 'ubuntu') || contains(matrix.image, 'debian')
                 shell: bash
                 #run: chmod 755 gradlew
                 run: |
