@@ -297,11 +297,15 @@ tasks.register("listDependencies") {
     }
 }
 
-// --add-opens=java.base/java.util.concurrent=ALL-UNNAMED // Hat zur Kompilierungszeit keine Auswirkungen
+// --add-opens=java.base/java.util.concurrent=ALL-UNNAMED // No effect during compile.
 def compilerArgs = [
-        // "--add-modules=ALL-SYSTEM",
-        // "--add-modules=jdk.incubator.concurrent",
-        // "--add-exports=java.base/sun.security.action=ALL-UNNAMED",
+        //"--add-modules=ALL-SYSTEM"
+        //, "--add-modules=jdk.incubator.concurrent"
+        //, "--add-modules=jdk.incubator.vector"
+        //, "--add-exports=java.base/sun.security.action=ALL-UNNAMED"
+        // Disable annotation processing.
+        // "-proc:none",
+        // Verbose compiler processing.
         // "-verbose",
         // Compiler Warnings as Errors.
         // "-Werror",
@@ -321,7 +325,8 @@ def compilerArgs = [
         "-Xlint:empty",
         // case-Block in einer switch-Anweisung ohne abschließendes break.
         "-Xlint:fallthrough",
-        // return-Anweisung in einem finally-Block. Diese Konstruktion kann eine andere return-Anweisung im try-Block maskieren und zu schwer nachvollziehbarem Verhalten führen.
+        // return-Anweisung in einem finally-Block. Diese Konstruktion kann eine andere return-Anweisung im try-Block maskieren und zu schwer nachvollziehbarem Verhalten
+        // führen.
         "-Xlint:finally",
         // Aufruf des Compilers mit einer älteren Version für den Quelltext (Schalter -source) als für die Laufzeitbibliothek (-bootclasspath).
         // Dabei kann Bytecode entstehen, der auf der älteren Plattform nicht funktioniert, weil er sich auf die neuere Laufzeitbibliothek bezieht.
@@ -330,6 +335,8 @@ def compilerArgs = [
         "-Xlint:overrides",
         // Unerreichbares Element im Classpath.
         "-Xlint:path",
+        // Enable Preview-Details.
+        //"-Xlint:preview",
         // Annotation gefunden, für die sich kein Prozessor zuständig erklärt.
         "-Xlint:processing",
         // Verwendung einer generischen Klasse oder eines generischen Interface ohne Typ-Argument.
@@ -341,12 +348,14 @@ def compilerArgs = [
         // Verdächtiger ARM-Block, wie beispielsweise ARM-Block mit einer Ressource, die nicht verwendet wird, ARM-Block mit einem expliziten close-Aufruf,
         // Definition einer close-Methode mit einer anderen Exception als IOException.
         "-Xlint:try",
-        // Einsatz eines generischen Typs in einem Kontext, in dem die statische Typprüfung des Compilers nicht mehr sicherstellen kann, dass Typfehler zur Laufzeit ausgeschlossen sind.
+        // Einsatz eines generischen Typs in einem Kontext, in dem die statische Typprüfung des Compilers nicht mehr sicherstellen kann, dass Typfehler zur Laufzeit
+        // ausgeschlossen sind.
         "-Xlint:unchecked",
         // Vararg-Parameter mit einem generischen Typ verbieten.
         "-Xlint:varargs"
-        // Disable annotation processing.
-        //, "-proc:none"
+        // Prevents Message:
+        // OpenJDK 64-Bit Server VM warning: Sharing is only supported for bootloader classes because bootstrap classpath has been appended.
+        //, "-Xshare:off"
 ]
 
 [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
