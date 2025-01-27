@@ -24,6 +24,8 @@ plugins {
 }
 
 clean {
+// tasks.named("clean").configure {
+// tasks.withType(Delete).configureEach {
     doFirst {
         def dirs = ["bin", "logs", "out", "target"]
 
