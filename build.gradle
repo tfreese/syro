@@ -153,16 +153,16 @@ java {
 jar {
     enabled = true
 
-    manifest {
-        attributes(
-                "Build-By": "https://github.com/tfreese",
-                "Build-Date": java.time.LocalDateTime.now().withNano(0),
-                "Build-JDK": System.getProperty("java.version") + " - " + System.getProperty("java.specification.vendor"),
-                // "Main-Class": project.main,
-                "Build-Title": project.name,
-                "Build-Version": project.version
-        )
-    }
+    // manifest {
+    //     attributes(
+    //             "Build-By": "https://github.com/tfreese",
+    //             "Build-Date": java.time.LocalDateTime.now().withNano(0),
+    //             "Build-JDK": System.getProperty("java.version") + " - " + System.getProperty("java.specification.vendor"),
+    //             // "Main-Class": project.main,
+    //             "Build-Title": project.name,
+    //             "Build-Version": project.version
+    //     )
+    // }
 
     // into "META-INF", {
     //     from layout.projectDirectory.dir("src").dir("main").dir("xsd")
@@ -170,6 +170,20 @@ jar {
     // metaInf {
     //     from layout.projectDirectory.dir("src").dir("main").dir("xsd")
     // }
+}
+
+tasks.withType(Jar).configureEach {
+    // Same Manifest for JARs and WARs.
+    manifest {
+        attributes(
+                "Build-By": "https://github.com/tfreese",
+                "Build-Date": LocalDateTime.now().withNano(0).toString(),
+                "Build-JDK": System.getProperty("java.version") + " - " + System.getProperty("java.specification.vendor"),
+                // "Main-Class": project.main,
+                "Build-Title": project.name,
+                "Build-Version": project.version
+        )
+    }
 }
 
 // Reproducible Build.
@@ -582,13 +596,13 @@ sonarLint {
 
 // DefaultModuleComponentIdentifier
 def removeIf = { ModuleComponentIdentifier coordinate ->
-    if ("org.owasp.dependencycheck".equals(coordinate.getGroup())) {
-        // Since 9.x an Account is required.
-        if (!coordinate.getVersion().startsWith("8")) {
-            logger.lifecycle("ignored: {}", coordinate)
-            return true
-        }
-    }
+    // if ("org.owasp.dependencycheck".equals(coordinate.getGroup())) {
+    //     // Since 9.x an NVD API Key is required for full performance by direct web access.
+    //     if (!coordinate.getVersion().startsWith("8")) {
+    //         logger.lifecycle("ignored: {}", coordinate)
+    //         return true
+    //     }
+    // }
 
     def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> coordinate.getVersion().toUpperCase().contains(it) }
     def regex = /^[0-9,.v-]+(-r)?$/
