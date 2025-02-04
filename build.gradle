@@ -127,6 +127,9 @@ dependencyManagement {
 dependencies {
     //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     compileOnly("io.netty:netty-buffer")
+    //         {
+    //     exclude group: "ch.qos.logback", module: "logback-classic"
+    // }
 
     // JARs aus libs-Folder.
     //implementation fileTree(dir: "libs", include: "*.jar")
@@ -134,6 +137,12 @@ dependencies {
     testImplementation("io.netty:netty-buffer")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // modules {
+    //     module('org.springframework.boot:spring-boot-starter-logging') {
+    //         replacedBy 'org.springframework.boot:spring-boot-starter-log4j2', 'Use Log4j2 instead of Logback'
+    //     }
+    // }
 }
 
 java {
