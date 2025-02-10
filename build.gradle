@@ -457,7 +457,21 @@ artifacts {
 publishing {
     publications {
         syro(MavenPublication) {
+            // afterEvaluate {
+            //     // groupId = "..."
+            //     // artifactId = "..."
+            //     // version = "..."
+            // }
+
             from components.java
+
+            // java-library:
+            // - api = <scope>compile</scope>
+            // - runtimeOnly = <scope>runtime</scope>
+            //
+            // java:
+            // - implementation = <scope>runtime</scope>
+            // - runtimeOnly = <scope>runtime</scope>
 
             pom {
                 name = project.name
