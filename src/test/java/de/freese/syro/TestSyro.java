@@ -106,7 +106,7 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testBoolean(final String name, final DataHolder dataHolder) {
-        Serializer<Boolean> serializer = BooleanSerializer.getInstance();
+        final Serializer<Boolean> serializer = BooleanSerializer.getInstance();
 
         final DataWriter writer = dataHolder.createWriter();
         serializer.write(writer, null);
@@ -122,7 +122,7 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testDouble(final String name, final DataHolder dataHolder) {
-        Serializer<Double> serializer = DoubleSerializer.getInstance();
+        final Serializer<Double> serializer = DoubleSerializer.getInstance();
 
         final DataWriter writer = dataHolder.createWriter();
         serializer.write(writer, null);
@@ -138,7 +138,7 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testException(final String name, final DataHolder dataHolder) {
-        Serializer<Exception> serializer = ExceptionSerializer.getInstance();
+        final Serializer<Exception> serializer = ExceptionSerializer.getInstance();
 
         final IOException exception = new IOException("Test");
         final StackTraceElement[] stackTraceOrigin = exception.getStackTrace();
@@ -164,7 +164,7 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testFloat(final String name, final DataHolder dataHolder) {
-        Serializer<Float> serializer = FloatSerializer.getInstance();
+        final Serializer<Float> serializer = FloatSerializer.getInstance();
 
         final DataWriter writer = dataHolder.createWriter();
         serializer.write(writer, null);
@@ -180,7 +180,7 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testInteger(final String name, final DataHolder dataHolder) {
-        Serializer<Integer> serializer = IntegerSerializer.getInstance();
+        final Serializer<Integer> serializer = IntegerSerializer.getInstance();
 
         final DataWriter writer = dataHolder.createWriter();
         serializer.write(writer, null);
@@ -196,7 +196,7 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testLong(final String name, final DataHolder dataHolder) {
-        Serializer<Long> serializer = LongSerializer.getInstance();
+        final Serializer<Long> serializer = LongSerializer.getInstance();
 
         final DataWriter writer = dataHolder.createWriter();
         serializer.write(writer, null);
@@ -212,11 +212,11 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testPoint(final String name, final DataHolder dataHolder) {
-        Serializer<Point> serializer = new Serializer<Point>() {
+        final Serializer<Point> serializer = new Serializer<Point>() {
             @Override
             public Point read(final DataReader reader) {
-                int x = reader.readInteger();
-                int y = reader.readInteger();
+                final int x = reader.readInteger();
+                final int y = reader.readInteger();
 
                 return new Point(x, y);
             }
@@ -240,7 +240,7 @@ class TestSyro {
     @ParameterizedTest(name = "{index} -> {0}")
     @MethodSource("createArguments")
     void testString(final String name, final DataHolder dataHolder) {
-        Serializer<String> serializer = StringSerializer.getInstance();
+        final Serializer<String> serializer = StringSerializer.getInstance();
 
         final String text = "abcABC123,.;:-_ÖÄÜöäü*'#+`?ß´987/()=?";
 
