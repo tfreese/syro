@@ -263,18 +263,18 @@ test {
         // exceptionFormat = TestExceptionFormat.FULL
     }
 
-    afterSuite { desc, result ->
-        if (!desc.parent) {
-            String output = "Results: ${result.resultType} - ${result.testCount} Tests - ${result.successfulTestCount} SUCCESSFUL, ${result.failedTestCount} FAILED, ${result.skippedTestCount} SKIPPED"
-
-            String lines = "-".repeat(output.length())
-            // String lines = Stream.generate(() -> "-").limit(output.length()).collect(Collectors.joining());
-
-            logger.lifecycle(lines)
-            logger.lifecycle(output)
-            logger.lifecycle(lines)
-        }
-    }
+    // afterSuite { desc, result ->
+    //     if (!desc.parent) {
+    //         String output = "Results: ${result.resultType} - ${result.testCount} Tests - ${result.successfulTestCount} SUCCESSFUL, ${result.failedTestCount} FAILED, ${result.skippedTestCount} SKIPPED"
+    //
+    //         String lines = "-".repeat(output.length())
+    //         // String lines = Stream.generate(() -> "-").limit(output.length()).collect(Collectors.joining());
+    //
+    //         logger.lifecycle(lines)
+    //         logger.lifecycle(output)
+    //         logger.lifecycle(lines)
+    //     }
+    // }
 
     finalizedBy("jacocoTestReport")
 }
