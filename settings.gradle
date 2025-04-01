@@ -89,9 +89,9 @@ dependencyResolutionManagement {
 // GRADLE_USER_HOME/init.gradle
 // beforeSettings { settings ->
 //     settings.caches {
-//         cleanup = Cleanup.ALWAYS // Cleanup is performed at the end of each build session.
+//         //cleanup = Cleanup.ALWAYS  // Cleanup is performed at the end of each build session.
 //         cleanup = Cleanup.DEFAULT // Cleanup is performed periodically in the background (currently once every 24 hours).
-//         cleanup = Cleanup.DISABLED
+//         //cleanup = Cleanup.DISABLED
 //
 //         releasedWrappers.removeUnusedEntriesAfterDays = 45
 //         snapshotWrappers.removeUnusedEntriesAfterDays = 10
@@ -110,3 +110,30 @@ println("Gradle version: ${GradleVersion.current().version}")
 println("Java version: ${JavaVersion.current()}")
 println("MaxWorkerCount: ${gradle.getStartParameter().getMaxWorkerCount()}")
 println(">>>>>>>>>")
+
+// buildCache {
+//     boolean isCi = System.getenv().containsKey("bamboo_buildNumber")
+//
+//     local {
+//         enabled = !isCi
+//         // directory = new File(rootDir, "build-cache")
+//     }
+//
+//     remote(DirectoryBuildCache) {
+//         enabled = !isCi
+//         directory = "/tmp/build-cache"
+//         push = true
+//     }
+//
+//     // remote(HttpBuildCache) {
+//     //     enabled = isCi
+//     //     url = https://HOST:PORT/cache/
+//     //     credentials {
+//     //         username = "build-cache-user-name"
+//     //         password = "build-cache-password"
+//     //     }
+//     //     push = true
+//     //     allowUntrustedServer = true
+//     //     allowInsecureProtocol = true
+//     // }
+// }
