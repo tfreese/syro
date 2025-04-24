@@ -14,13 +14,13 @@
 // or as alternative newer Variant
 //
 plugins {
-    id "com.github.ben-manes.versions" version "$version_gradleVersionsPlugin"
-    id "java-library"
-    id "maven-publish"
-    id "io.spring.dependency-management" version "$version_springDependencyManagementPlugin"
-    id "name.remal.sonarlint" version "$version_nameRemalSonarlintGradlePlugin"
-    // id "checkstyle"
-    id "jacoco"
+    id("com.github.ben-manes.versions") version("$version_gradleVersionsPlugin")
+    id("java-library")
+    id("maven-publish")
+    id("io.spring.dependency-management") version("$version_springDependencyManagementPlugin")
+    id("name.remal.sonarlint") version("$version_nameRemalSonarlintGradlePlugin")
+    // id("checkstyle")
+    id("jacoco")
 }
 
 clean {
@@ -37,8 +37,8 @@ clean {
             if (directory.getAsFile().exists()) {
                 // println("delete: " + directory)
                 logger.lifecycle("delete: {}", directory)
-                // delete fileTree(directory).include("**/*")
-                delete directory
+                // delete(fileTree(directory).include("**/*"))
+                delete(directory)
             }
         })
     }
@@ -80,13 +80,13 @@ dependencyManagement {
 // ext.set("versions", versions)
 
 // configurations.configureEach {
-//     exclude group: "ch.qos.logback", module: "logback-classic"
+//     exclude(group: "ch.qos.logback", module: "logback-classic")
 // }
 // configurations.all {
-//     exclude group: "ch.qos.logback", module: "logback-classic"
+//     exclude(group: "ch.qos.logback", module: "logback-classic")
 // }
 // configurations.testImplementation {
-//     exclude group: "ch.qos.logback", module: "logback-classic"
+//     exclude(group: "ch.qos.logback", module: "logback-classic")
 // }
 
 // ant.lifecycleLogLevel = "INFO"
@@ -111,7 +111,7 @@ dependencyManagement {
 // apps.each { app ->
 //     tasks.register("taskFor${app}") {
 //         group = "MyTasks"
-//         description "some generic task"
+//         description = "some generic task"
 //
 //         var value = "${appProperties."value$app"}"
 //
@@ -123,8 +123,8 @@ dependencyManagement {
 
 // sourceSets {
 //     that.resources {
-//         srcDir layout.projectDirectory.dir("..").dir("that")
-//         include "file.ext"
+//         srcDir(layout.projectDirectory.dir("..").dir("that"))
+//         include("file.ext")
 //     }
 //
 //     main {
@@ -140,7 +140,7 @@ dependencies {
     //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     compileOnly("io.netty:netty-buffer")
     //         {
-    //     exclude group: "ch.qos.logback", module: "logback-classic"
+    //     exclude(group: "ch.qos.logback", module: "logback-classic")
     // }
 
     // JARs aus libs-Folder.
@@ -152,7 +152,7 @@ dependencies {
 
     // modules {
     //     module('org.springframework.boot:spring-boot-starter-logging') {
-    //         replacedBy 'org.springframework.boot:spring-boot-starter-log4j2', 'Use Log4j2 instead of Logback'
+    //         replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
     //     }
     // }
 }
@@ -185,11 +185,11 @@ jar {
     //     )
     // }
 
-    // into "META-INF", {
-    //     from layout.projectDirectory.dir("src").dir("main").dir("xsd")
+    // into("META-INF") {
+    //     from(layout.projectDirectory.dir("src").dir("main").dir("xsd"))
     // }
     // metaInf {
-    //     from layout.projectDirectory.dir("src").dir("main").dir("xsd")
+    //     from(layout.projectDirectory.dir("src").dir("main").dir("xsd"))
     // }
 }
 
@@ -232,20 +232,20 @@ test {
 
     jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 
-    systemProperty "java.awt.headless", "true"
+    systemProperty("java.awt.headless", "true")
 
     filter {
         // Deactivate Class
-        // excludeTestsMatching "PACKAGE.CLASS"
+        // excludeTestsMatching("PACKAGE.CLASS")
 
         // Deactivate Method
-        // excludeTestsMatching "PACKAGE.CLASS.METHOD"
+        // excludeTestsMatching("PACKAGE.CLASS.METHOD")
 
         // Deactivate Package with Wildcards
-        // excludeTestsMatching "*.integration.*"
+        // excludeTestsMatching("*.integration.*")
 
         // Deactivate Method with Wildcards
-        // excludeTestsMatching "*stress*"
+        // excludeTestsMatching("*stress*")
     }
 
     reports {
@@ -302,23 +302,23 @@ tasks.register("listRepos") {
     description = "Shows configured Repositories"
 
     doLast {
-        println "Plugin Repositories:"
-        project.buildscript.repositories.each { println "- " + it.properties.displayName }
+        println("Plugin Repositories:")
+        project.buildscript.repositories.each { println("- " + it.properties.displayName) }
         // project.buildscript.repositories.getAsMap().forEach {
         //     name, repo -> println("$name >> ${repo.properties.displayName}")
         // }
 
-        println "Dependency Repositories:"
-        project.repositories.each { println "Name: " + it.name + "; url: " + it.url }
+        println("Dependency Repositories:")
+        project.repositories.each { println("Name: " + it.name + "; url: " + it.url) }
 
-        // project.buildscript.repositories.each { println "Name: " + it.name + "; url: " + it.url }
-        // project.buildscript.repositories.each { println it.properties }
+        // project.buildscript.repositories.each { println("Name: " + it.name + "; url: " + it.url) }
+        // project.buildscript.repositories.each { println(it.properties) }
 
         // project.buildscript.repositories.each {
-        //     if (it.properties.displayName == 'Gradle Central Plugin Repository') {
-        //         println "Name: " + it.displayName
+        //     if (it.properties.displayName == "Gradle Central Plugin Repository") {
+        //         println("Name: " + it.displayName)
         //     } else {
-        //         println "Name: " + it.name + "; url: " + it.url
+        //         println("Name: " + it.name + "; url: " + it.url)
         //     }
         // }
     }
@@ -329,8 +329,8 @@ tasks.register("listDependencies") {
     description = "Shows configured Dependencies"
 
     doLast {
-        println "Dependencies:"
-        project.configurations.compileClasspath.each { println it }
+        println("Dependencies:")
+        project.configurations.compileClasspath.each { println(it) }
     }
 }
 
@@ -411,7 +411,7 @@ tasks.compileTestJava {
 //     // options.encoding = "UTF-8"
 //
 //     doFirst {
-//         println "Compiler args: " + options.compilerArgs
+//         println("Compiler args: " + options.compilerArgs)
 //     }
 // }
 
@@ -422,7 +422,7 @@ tasks.register("sourcesJar", Jar) {
     dependsOn("classes")
 
     getArchiveClassifier().set("sources")
-    from sourceSets.main.allSource
+    from(sourceSets.main.allSource)
 }
 
 tasks.register("testJar", Jar) {
@@ -432,7 +432,7 @@ tasks.register("testJar", Jar) {
     dependsOn("testClasses")
 
     getArchiveClassifier().set("test")
-    from sourceSets.test.output
+    from(sourceSets.test.output)
 }
 
 tasks.register("testSourcesJar", Jar) {
@@ -442,7 +442,7 @@ tasks.register("testSourcesJar", Jar) {
     dependsOn("testClasses")
 
     getArchiveClassifier().set("test-sources")
-    from sourceSets.test.allSource
+    from(sourceSets.test.allSource)
 }
 
 tasks.register("javadocJar", Jar) {
@@ -452,17 +452,17 @@ tasks.register("javadocJar", Jar) {
     dependsOn("javadoc")
 
     getArchiveClassifier().set("javadoc")
-    from javadoc.destinationDir
+    from(javadoc.destinationDir)
 }
 
 // Merge Artefacts.
 artifacts {
-    archives sourcesJar
-    archives testJar
-    archives testSourcesJar
-    archives javadocJar
+    archives(sourcesJar)
+    archives(testJar)
+    archives(testSourcesJar)
+    archives(javadocJar)
 
-    // archives file: "A-sources.jar", name: "A", type: "jar", classifier: "sources"
+    // archives(file: "A-sources.jar", name: "A", type: "jar", classifier: "sources")
 }
 
 // https://docs.gradle.org/current/userguide/publishing_maven.html
@@ -475,7 +475,7 @@ publishing {
             //     // version = "..."
             // }
 
-            from components.java
+            from(components.java)
 
             // java-library:
             // - api = <scope>compile</scope>
@@ -514,29 +514,29 @@ publishing {
                 // }
             }
 
-            artifact sourcesJar
-            artifact testJar
-            artifact testSourcesJar
-            artifact javadocJar
+            artifact(sourcesJar)
+            artifact(testJar)
+            artifact(testSourcesJar)
+            artifact(javadocJar)
             // artifact("macos-app-x64.dmg") {
-            //     classifier "macos-x64"
-            //     extension "dmg"
+            //     classifier("macos-x64")
+            //     extension("dmg")
             // }
             // artifact("windows-app-x64.exe") {
-            //     classifier "windows-x64"
-            //     extension "exe"
+            //     classifier("windows-x64")
+            //     extension("exe")
             // }
         }
 
         // custom(MavenPublication) {
         //     if (!fileTree(dir: "generated/reports", include: '**/*').empty) {
-        //         artifact customReport
+        //         artifact(customReport)
         //     }
         //     if (another_condition) {
-        //         artifact anotherDistribution
+        //         artifact(anotherDistribution)
         //     }
         //     if (yet_another_condition) {
-        //         artifact yetAnotherDistribution
+        //         artifact(yetAnotherDistribution)
         //     }
         // }
     }
