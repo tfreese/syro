@@ -14,13 +14,13 @@
 // or as alternative newer Variant
 //
 plugins {
-    id("com.github.ben-manes.versions") version("$version_gradleVersionsPlugin")
+    // id("com.github.ben-manes.versions") version("$version_gradleVersionsPlugin")
     id("java-library")
     id("maven-publish")
     id("io.spring.dependency-management") version("$version_springDependencyManagementPlugin")
     id("name.remal.sonarlint") version("$version_nameRemalSonarlintGradlePlugin")
     // id("checkstyle")
-    id("jacoco")
+    // id("jacoco")
 }
 
 clean {
@@ -276,7 +276,7 @@ test {
     //     }
     // }
 
-    finalizedBy("jacocoTestReport")
+    // finalizedBy("jacocoTestReport")
 }
 
 javadoc {
@@ -656,47 +656,47 @@ sonarLint {
 }
 
 // DefaultModuleComponentIdentifier
-def removeIf = { ModuleComponentIdentifier coordinate ->
-    // if ("org.owasp.dependencycheck".equals(coordinate.getGroup())) {
-    //     // Since 9.x an NVD API Key is required for full performance by direct web access.
-    //     if (!coordinate.getVersion().startsWith("8")) {
-    //         logger.lifecycle("ignored: {}", coordinate)
-    //         return true
-    //     }
-    // }
-
-    def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> coordinate.getVersion().toUpperCase().contains(it) }
-    def regex = /^[0-9,.v-]+(-r)?$/
-
-    return !stableKeyword && !(coordinate.getVersion() ==~ regex)
-}
-tasks.named("dependencyUpdates").configure {
-    checkForGradleUpdate = false
-
-    rejectVersionIf {
-        removeIf(it.candidate)
-    }
-
-    outputFormatter = { result ->
-        def updatable = result.outdated.dependencies
-
-        if (updatable.isEmpty()) {
-            logger.lifecycle("No updates available.")
-
-            return
-        }
-
-        logger.lifecycle("There are new updates:")
-
-        updatable.each { dependency ->
-            var newVersion = java.util.Optional.ofNullable(dependency.available.release)
-                    .or(() -> java.util.Optional.ofNullable(dependency.available.milestone))
-                    .or(() -> java.util.Optional.ofNullable(dependency.available.integration))
-                    .orElse("???")
-            logger.lifecycle("{}:{}:{} -> {}", dependency.group, dependency.name, dependency.version, newVersion)
-        }
-    }
-}
+// def removeIf = { ModuleComponentIdentifier coordinate ->
+//     // if ("org.owasp.dependencycheck".equals(coordinate.getGroup())) {
+//     //     // Since 9.x an NVD API Key is required for full performance by direct web access.
+//     //     if (!coordinate.getVersion().startsWith("8")) {
+//     //         logger.lifecycle("ignored: {}", coordinate)
+//     //         return true
+//     //     }
+//     // }
+//
+//     def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> coordinate.getVersion().toUpperCase().contains(it) }
+//     def regex = /^[0-9,.v-]+(-r)?$/
+//
+//     return !stableKeyword && !(coordinate.getVersion() ==~ regex)
+// }
+// tasks.named("dependencyUpdates").configure {
+//     checkForGradleUpdate = false
+//
+//     rejectVersionIf {
+//         removeIf(it.candidate)
+//     }
+//
+//     outputFormatter = { result ->
+//         def updatable = result.outdated.dependencies
+//
+//         if (updatable.isEmpty()) {
+//             logger.lifecycle("No updates available.")
+//
+//             return
+//         }
+//
+//         logger.lifecycle("There are new updates:")
+//
+//         updatable.each { dependency ->
+//             var newVersion = java.util.Optional.ofNullable(dependency.available.release)
+//                     .or(() -> java.util.Optional.ofNullable(dependency.available.milestone))
+//                     .or(() -> java.util.Optional.ofNullable(dependency.available.integration))
+//                     .orElse("???")
+//             logger.lifecycle("{}:{}:{} -> {}", dependency.group, dependency.name, dependency.version, newVersion)
+//         }
+//     }
+// }
 
 // For Composite Build.
 tasks.register("cleanAll", GradleBuild) {
@@ -705,3 +705,56 @@ tasks.register("cleanAll", GradleBuild) {
 tasks.register("buildAll", GradleBuild) {
     tasks = ["build"]
 }
+
+// ext {
+//     main = "de.freese.CLASS"
+// }
+// Start: gradle run
+// application {
+//     mainClass = project.main
+//
+//     applicationDefaultJvmArgs = ["-Xms1024m", "-Xmx2048m"]
+// }
+// run {
+//     jvmArgs = ["--enable-native-access=ALL-UNNAMED"]
+// }
+
+// Start: gradle runMe
+// tasks.register("runMe", JavaExec) {
+//     group = "MyTasks"
+//     description = "Run the main class with JavaExecTask"
+//
+//     // executable = ".../java.exe"
+//     // workingDir = workDir
+//     // args = ["...","..."]
+//     jvmArgs("--enable-native-access=ALL-UNNAMED")
+//     // debugOptions {
+//     //     enabled = true
+//     //     port = 5566
+//     //     server = true
+//     //     suspend = false
+//     // }
+//
+//     // classpath = files(...)
+//     // classpath = configurations.runtimeClasspath // Doesn't contain Main-Class !
+//     classpath = sourceSets.main.runtimeClasspath
+//     mainClass = project.main
+//
+//     // args("-Dspring.profiles.active=file")
+//     // environment("spring.profiles.active", "file")
+// }
+
+// Start: gradle bootRun --args="--spring.profiles.active=file"
+// The archive name. If the name has not been explicitly set, the pattern for the name is:
+// [archiveBaseName]-[archiveAppendix]-[archiveVersion]-[archiveClassifier].[archiveExtension]
+// archiveFileName = "my-boot.jar"
+// springBoot {
+//     mainClass = project.main
+// }
+
+// gradle bootRun --args="--spring.profiles.active=file --server.port=65111"
+// bootRun {
+//     args = [
+//             "--enable-native-access=ALL-UNNAMED"
+//     ]
+// }
