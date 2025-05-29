@@ -49,7 +49,7 @@ public final class ExceptionSerializer implements Serializer<Exception> {
             // final Class<? extends Exception> clazz = (Class<? extends Exception>) Class.forName(clazzName);
             final Class<?> clazz = lookup.findClass(clazzName);
 
-            // Search for method that: have return type of void (Constructor) and accept a String parameter.
+            // Search for method that: have a return type of void (Constructor) and accept a String parameter.
             final MethodType methodType = MethodType.methodType(void.class, String.class);
 
             // Find the constructor based on the MethodType defined above.

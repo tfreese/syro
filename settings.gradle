@@ -13,6 +13,8 @@ pluginManagement {
 // Without rootProject.name the Name of the Projekt-Directory is used.
 //rootProject.name = "syro"
 
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 //

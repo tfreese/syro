@@ -8,10 +8,6 @@ import java.nio.charset.StandardCharsets;
  * @author Thomas Freese
  */
 public interface DataReader {
-    default Charset getCharset() {
-        return StandardCharsets.UTF_8;
-    }
-
     default boolean readBoolean() {
         return readByte() == 1;
     }
@@ -96,7 +92,7 @@ public interface DataReader {
     }
 
     default String readString() {
-        return readString(getCharset());
+        return readString(StandardCharsets.UTF_8);
     }
 
     default String readString(final Charset charset) {

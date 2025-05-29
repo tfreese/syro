@@ -8,10 +8,6 @@ import java.nio.charset.StandardCharsets;
  * @author Thomas Freese
  */
 public interface DataWriter {
-    default Charset getCharset() {
-        return StandardCharsets.UTF_8;
-    }
-
     default void writeBoolean(final boolean value) {
         writeByte((byte) (value ? 1 : 0));
     }
@@ -109,7 +105,7 @@ public interface DataWriter {
     }
 
     default void writeString(final String value) {
-        writeString(value, getCharset());
+        writeString(value, StandardCharsets.UTF_8);
     }
 
     default void writeString(final String value, final Charset charset) {
