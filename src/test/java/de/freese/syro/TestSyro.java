@@ -37,6 +37,7 @@ import de.freese.syro.serializer.StringSerializer;
 
 @SuppressWarnings("ALL")
 class TestSyro {
+
     private static final int BUFFER_SIZE = 1024 * 18;
 
     private static final DataHolder DATA_HOLDER_BYTE_BUF = new DataHolder() {
@@ -54,7 +55,6 @@ class TestSyro {
             return new ByteBufWriter(buffer);
         }
     };
-
     private static final DataHolder DATA_HOLDER_BYTE_BUFFER = new DataHolder() {
         private final ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
@@ -72,7 +72,6 @@ class TestSyro {
             return new ByteBufferWriter(buffer);
         }
     };
-
     private static final DataHolder DATA_HOLDER_OUTPUT_INPUT_STREAM = new DataHolder() {
         private ByteArrayOutputStream outputStream;
 
@@ -94,6 +93,9 @@ class TestSyro {
 
         DataWriter createWriter();
     }
+
+    // @TempDir(cleanup = CleanupMode.ALWAYS)
+    // private static Path pathTest;
 
     static Stream<Arguments> createArguments() {
         return Stream.of(
