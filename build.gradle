@@ -65,6 +65,11 @@ clean {
 // }
 
 dependencyManagement {
+    generatedPomCustomization {
+        // Disable Spring's "dependencyManagement" in POM.
+        enabled = false
+    }
+
     imports {
         // mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         mavenBom("org.springframework.boot:spring-boot-dependencies:$version_springBoot")
@@ -138,7 +143,8 @@ dependencyManagement {
 
 dependencies {
     //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
-    compileOnly("io.netty:netty-buffer")
+    api("io.netty:netty-buffer")
+    // compileOnly("io.netty:netty-buffer")
     //         {
     //     exclude(group: "ch.qos.logback", module: "logback-classic")
     // }
@@ -466,6 +472,8 @@ artifacts {
 }
 
 // https://docs.gradle.org/current/userguide/publishing_maven.html
+// build.finalizedBy("publishToMavenLocal")
+
 publishing {
     publications {
         syro(MavenPublication) {
@@ -474,6 +482,15 @@ publishing {
             //     // artifactId = "..."
             //     // version = "..."
             // }
+
+            versionMapping {
+                usage(Usage.JAVA_API) {
+                    fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)
+                }
+                usage(Usage.JAVA_RUNTIME) {
+                    fromResolutionResult()
+                }
+            }
 
             from(components.java)
 
@@ -485,7 +502,18 @@ publishing {
             // - implementation = <scope>runtime</scope>
             // - runtimeOnly = <scope>runtime</scope>
 
+            pom.withXml {
+                def root = asNode()
+                root.appendNode("packaging", "jar")
+                // root.dependencies.removeAll { dep ->
+                //     dep.scope == "test"
+                // }
+            }
+
             pom {
+                // Is not generated in the POM.
+                // packaging = "jar"
+
                 name = project.name
                 description = project.description
                 // url = "http://www.example.com/library"
@@ -502,9 +530,13 @@ publishing {
                 // }
                 // developers {
                 //     developer {
+                //         organization = "Private Code"
+                //         organizationUrl = "https://github.com/tfreese"
+                //         url = "https://github.com/tfreese"
                 //         id = "johnd"
                 //         name = "John Doe"
                 //         email = "john.doe@example.com"
+                //         roles = ["architect", "developer"]
                 //     }
                 // }
                 // scm {
