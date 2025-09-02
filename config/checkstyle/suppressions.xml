@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+https://checkstyle.sourceforge.io
+
+In the Code:
+@SuppressWarnings("checkstyle:AvoidEscapedUnicodeCharacters")
+@SuppressWarnings("checkstyle:EmptyBlock")
+-->
+<suppressions>
+    <!--suppress checks="JavadocStyleCheck" files=".*GeneratedObject.java$" lines="50-9999" /-->
+    <suppress checks="AvoidEscapedUnicodeCharacters" files=".*jripper-console.*AnsiCodes.java$" />
+    <suppress checks="TypeName" files=".*kodi-swing.*MyResources_de.java$" />
+
+    <!-- Suppress all checks for generated code. -->
+    <suppress checks=".*" files="[/\\]build[/\\]" />
+    <suppress checks=".*" files="[/\\]target[/\\]" />
+    <suppress checks=".*" files="[/\\]generated[/\\]" />
+    <suppress checks=".*" files="[/\\]out[/\\]" />
+
+    <!-- Suppress all checks for archives, classes and other binary files. -->
+    <suppress checks=".*" files=".*\.(jar|zip|war|class|tar|bin)$" />
+
+    <!-- Suppress all checks for image files. -->
+    <suppress checks=".*" files=".*\.(png|gif|jpg|jpeg)$" />
+
+    <!-- Suppress all checks for non-java files. -->
+    <suppress checks=".*" files=".*\.(txt|xml|csv|sh|thrift|html|sql|eot|ttf|woff|css)$" />
+
+</suppressions>

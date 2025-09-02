@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!-- https://checkstyle.sourceforge.io -->
+<module name="Checker">
+    <module name="SuppressionFilter">
+        <property name="file" value="${org.checkstyle.suppressionFilter}" default="suppressions.xml" />
+        <!--<property name="file" value="${config_loc}/suppressions.xml"/>-->
+        <property name="optional" value="false" />
+    </module>
+
+    <module name="SuppressWarningsFilter" />
+
+    <!-- Miscellaneous -->
+    <module name="NewlineAtEndOfFile" />
+    <module name="UniqueProperties">
+        <property name="fileExtensions" value="properties" />
+        <!-- <property name="fileExtensions" value="custom"/>  -->
+    </module>
+
+    <!-- Size Violations -->
+    <module name="LineLength">
+        <property name="max" value="180" />
+    </module>
+
+    <!-- Whitespace -->
+    <module name="FileTabCharacter" />
+
+    <module name="TreeWalker">
+        <!-- Annotations -->
+        <module name="AnnotationLocation" />
+        <module name="MissingDeprecated">
+            <property name="violateExecutionOnNonTightHtml" value="true" />
+        </module>
+        <module name="MissingOverride" />
+        <module name="SuppressWarnings" />
+        <module name="SuppressWarningsHolder" />
+
+        <!-- Block Checks -->
+        <module name="AvoidNestedBlocks" />
+        <module name="EmptyBlock" />
+        <module name="EmptyCatchBlock" />
+        <module name="JavadocMethod">
+            <property name="allowMissingParamTags" value="true" />
+            <property name="allowMissingReturnTag" value="true" />
+        </module>
+        <module name="NeedBraces" />
+
+        <!-- Class Design -->
+        <module name="FinalClass" />
+        <!--module name="HideUtilityClassConstructor"/--><!-- Kollidiert mit Spring-Startern -->
+        <module name="InterfaceIsType" />
+        <module name="MutableException" />
+        <module name="VisibilityModifier" />
+
+        <!-- Coding -->
+        <module name="AvoidDoubleBraceInitialization" />
+        <module name="CovariantEquals" />
+        <module name="DefaultComesLast" />
+        <module name="EmptyStatement" />
+        <module name="EqualsAvoidNull" />
+        <module name="EqualsHashCode" />
+        <module name="ExplicitInitialization" />
+        <module name="FallThrough" />
+        <module name="FinalLocalVariable" />
+        <module name="HiddenField">
+            <property name="tokens" value="VARIABLE_DEF" />
+        </module>
+        <module name="IllegalInstantiation" />
+        <module name="IllegalToken" />
+        <module name="IllegalType">
+            <property name="tokens" value="METHOD_DEF" />
+        </module>
+        <module name="InnerAssignment" />
+        <module name="MissingSwitchDefault" />
+        <module name="MultipleVariableDeclarations" />
+        <module name="NoArrayTrailingComma" />
+        <module name="NoClone" /> <!-- see 'SuperClone' -->
+        <module name="NoEnumTrailingComma" />
+        <module name="NoFinalizer" /> <!-- see 'SuperFinalize' -->
+        <module name="OneStatementPerLine">
+            <property name="treatTryResourcesAsStatement" value="true" />
+        </module>
+        <module name="PackageDeclaration" />
+        <module name="ParameterAssignment" />
+        <module name="RequireThis" />
+        <!-- <module name="ReturnCount"> -->
+        <!--     <property name="max" value="10" /> -->
+        <!--     <property name="maxForVoid" value="10" /> -->
+        <!-- </module> -->
+        <module name="SimplifyBooleanExpression" />
+        <module name="SimplifyBooleanReturn" />
+        <module name="StringLiteralEquality" />
+        <module name="UnnecessaryParentheses" />
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
+        <module name="UnnecessarySemicolonInEnumeration" />
+        <module name="UnnecessarySemicolonInTryWithResources" />
+        <module name="UnusedLocalVariable" />
+
+        <!-- Imports -->
+        <module name="AvoidStarImport" />
+        <module name="IllegalImport" />
+        <module name="RedundantImport" />
+        <module name="UnusedImports" />
+
+        <!-- Miscellaneous -->
+        <module name="ArrayTypeStyle" />
+        <module name="AvoidEscapedUnicodeCharacters" />
+        <module name="CommentsIndentation" />
+        <module name="FinalParameters" />
+        <!-- <module name="TodoComment" /> -->
+        <module name="UpperEll" />
+
+        <!-- Modifiers -->
+        <!-- <module name="ClassMemberImpliedModifier" /> -->
+        <!-- <module name="InterfaceMemberImpliedModifier" /> -->
+        <module name="ModifierOrder" />
+        <module name="RedundantModifier" />
+
+        <!-- Naming Conventions -->
+        <!-- <module name="AbstractClassName" /> -->
+        <module name="ConstantName" />
+        <!-- <module name="IllegalIdentifierName" /> -->
+        <module name="InterfaceTypeParameterName">
+            <property name="format" value="^[A-Z]{1,}$" />
+        </module>
+        <module name="LambdaParameterName" />
+        <module name="LocalVariableName" />
+        <module name="MemberName" />
+        <module name="MethodName" />
+        <module name="MethodTypeParameterName" />
+        <module name="PackageName" />
+        <module name="ParameterName" />
+        <module name="PatternVariableName" />
+        <module name="RecordComponentName" />
+        <module name="RecordTypeParameterName" />
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-zA-Z_0-9]*$" />
+        </module>
+        <module name="TypeName" />
+
+        <!-- Whitespace -->
+        <module name="EmptyForInitializerPad" />
+        <!-- <module name="EmptyForIteratorPad"/> -->
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true" />
+            <property name="tokens" value="VARIABLE_DEF, METHOD_DEF" />
+        </module>
+        <module name="GenericWhitespace" />
+        <module name="MethodParamPad" />
+        <module name="NoLineWrap" />
+        <module name="NoWhitespaceAfter" />
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="COMMA, POST_INC, POST_DEC, GENERIC_END, ELLIPSIS, LABELED_STAT, METHOD_REF " />
+        </module>
+        <module name="NoWhitespaceBeforeCaseDefaultColon" />
+        <module name="OperatorWrap" />
+        <module name="ParenPad" />
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT, ELLIPSIS, AT, LPAREN, ARRAY_DECLARATOR, RBRACK, METHOD_REF " />
+            <property name="option" value="nl" />
+        </module>
+        <module name="SingleSpaceSeparator" />
+        <module name="TypecastParenPad" />
+        <module name="WhitespaceAfter" />
+        <module name="WhitespaceAround" />
+
+    </module>
+</module>
