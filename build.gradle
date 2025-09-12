@@ -161,6 +161,8 @@ dependencies {
     //         replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
     //     }
     // }
+
+    // api("org.apache.commons:commons-lang3:3.18.0")
 }
 
 java {
@@ -623,10 +625,10 @@ sonarLint {
     ignoreFailures = true
     isGeneratedCodeIgnored = true
 
-    nodeJs {
-        detectNodeJs = false    // If not exist, try to Download: https://nodejs.org/dist
-        logNodeJsNotFound = false
-    }
+    // nodeJs {
+    //     detectNodeJs = false    // If not exist, try to Download: https://nodejs.org/dist
+    //     logNodeJsNotFound = false
+    // }
 
     languages {
         include("java") // Enable Java language only, all other languages become disabled
