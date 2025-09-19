@@ -170,7 +170,7 @@ java {
     // targetCompatibility = JavaVersion.VERSION_24
 
     toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+        languageVersion = JavaLanguageVersion.of(25)
         // vendor = JvmVendorSpec.ORACLE
         // implementation = JvmImplementation.J9
     }
