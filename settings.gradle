@@ -131,6 +131,7 @@ println("")
 //     //     credentials {
 //     //         username = "build-cache-user-name"
 //     //         password = "build-cache-password"
+//     //         headers.put("Authorization", "Bearer ${System.getenv("GRADLE_CACHE_TOKEN")}")
 //     //     }
 //     //     push = true
 //     //     allowUntrustedServer = true
