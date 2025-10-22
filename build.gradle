@@ -427,8 +427,6 @@ tasks.register("sourcesJar", Jar) {
     group = "MyTasks"
     description = "Creates a jar from the source files."
 
-    dependsOn("classes")
-
     getArchiveClassifier().set("sources")
     from(sourceSets.main.allSource)
 }
@@ -447,8 +445,6 @@ tasks.register("testSourcesJar", Jar) {
     group = "MyTasks"
     description = "Creates a jar from the test-source files."
 
-    dependsOn("testClasses")
-
     getArchiveClassifier().set("test-sources")
     from(sourceSets.test.allSource)
 }
@@ -463,14 +459,26 @@ tasks.register("javadocJar", Jar) {
     from(javadoc.destinationDir)
 }
 
-// Merge Artefacts.
-artifacts {
-    archives(sourcesJar)
-    archives(testJar)
-    archives(testSourcesJar)
-    archives(javadocJar)
+var reportsZip = tasks.register("reportsZip", Zip) {
+    group = "MyTasks"
+    description = "Creates a zip from the report files."
 
-    // archives(file: "A-sources.jar", name: "A", type: "jar", classifier: "sources")
+    mustRunAfter("test")
+    mustRunAfter("checkstyleMain")
+    mustRunAfter("checkstyleTest")
+    // mustRunAfter("sonarlintMain")
+    // mustRunAfter("sonarlintTest")
+
+    archiveBaseName.set("reports")
+    from("build/reports")
+}
+
+tasks.named("assemble") {
+    dependsOn("sourcesJar")
+    dependsOn("testJar")
+    dependsOn("testSourcesJar")
+    dependsOn("javadocJar")
+    dependsOn(reportsZip) // -> build/distributions
 }
 
 // https://docs.gradle.org/current/userguide/publishing_maven.html
