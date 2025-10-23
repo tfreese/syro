@@ -1,0 +1,33 @@
+name: Assembly
+description: "Assembly the project"
+runs:
+    using: composite
+    steps:
+        -   name: Assembly Libs
+            uses: actions/upload-artifact@v4
+            with:
+                name: libs_${{ runner.os }}
+                path: build/libs/*
+                if-no-files-found: warn
+                retention-days: 30
+
+        -   name: Assembly Test Reports
+            uses: actions/upload-artifact@v4
+            with:
+                name: reports-test_${{ runner.os }}
+                path: build/test-results/**/*.xml
+                if-no-files-found: warn
+                retention-days: 30
+
+        -   name: Assembly Reports
+            uses: actions/upload-artifact@v4
+            with:
+                name: reports_${{ runner.os }}
+                path: build/reports/**/*
+                if-no-files-found: warn
+                retention-days: 30
+
+#            -   name: Get Reports
+#                uses: actions/download-artifact@v5
+#                with:
+#                    name: reports_Linux

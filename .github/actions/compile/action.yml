@@ -1,0 +1,46 @@
+name: Compile
+description: "Compiles the project"
+inputs:
+    java-version:
+        description: "Java version to compile and test with"
+        required: true
+        default: "25"
+    gradle-executable:
+        description: "The Gradle executable"
+        required: true
+runs:
+    using: composite
+    steps:
+        -   name: Setup Java
+            uses: actions/setup-java@v5
+            with:
+                java-version: ${{ inputs.java-version }}
+                distribution: "oracle"
+                architecture: x64
+                cache: "gradle" # Preserve ~/.gradle Cache over Jobs.
+
+        # Preserve ~/.gradle Cache over Jobs.
+        -   name: Setup Gradle
+            uses: gradle/actions/setup-gradle@v5
+            with:
+                cache-read-only: false
+
+        -   name: Validate Gradle Wrapper
+            uses: gradle/actions/wrapper-validation@v3
+
+        -   name: Make Wrapper executable
+            if: runner.os != 'Windows'
+            #if: contains(matrix.image, 'ubuntu') || contains(matrix.image, 'debian')
+            shell: bash
+            #run: chmod 755 gradlew
+            run: |
+                if [ "${{ runner.os }}" = "Windows" ]; then
+                   echo "Not necessary on Windows."
+                else
+                    echo "Make Wrapper executable."
+                    chmod 755 gradlew
+                fi
+
+        -   name: Build with Gradle
+            #                run: ./gradlew build
+            run: ${{ inputs.gradle-executable }} build
