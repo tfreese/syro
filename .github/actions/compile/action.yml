@@ -32,7 +32,6 @@ runs:
             if: runner.os != 'Windows'
             #if: contains(matrix.image, 'ubuntu') || contains(matrix.image, 'debian')
             shell: bash
-            #run: chmod 755 gradlew
             run: |
                 if [ "${{ runner.os }}" = "Windows" ]; then
                    echo "Not necessary on Windows."

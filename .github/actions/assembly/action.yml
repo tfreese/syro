@@ -10,14 +10,18 @@ runs:
                 path: build/libs/*
                 if-no-files-found: warn
                 retention-days: 30
+                compression-level: 9
+                overwrite: true
 
         -   name: Assembly Test Reports
             uses: actions/upload-artifact@v4
             with:
-                name: reports-test_${{ runner.os }}
+                name: reports-test_${{ runner.os }}.zip
                 path: build/test-results/**/*.xml
                 if-no-files-found: warn
                 retention-days: 30
+                compression-level: 9
+                overwrite: true
 
         -   name: Assembly Reports
             uses: actions/upload-artifact@v4
@@ -26,6 +30,8 @@ runs:
                 path: build/reports/**/*
                 if-no-files-found: warn
                 retention-days: 30
+                compression-level: 9
+                overwrite: true
 
 #            -   name: Get Reports
 #                uses: actions/download-artifact@v5
