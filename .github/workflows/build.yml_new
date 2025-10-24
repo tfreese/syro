@@ -1,0 +1,88 @@
+# https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-gradle
+# https://gradlehero.com/build-gradle-projects-with-github-actions/
+# https://github.com/tkgregory/gradle-github-actions-example
+# https://docs.github.com/de/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow
+#
+# Test github actions local
+#
+# https://github.com/nektos/act
+# https://nektosact.com/usage/index.html
+#
+# pacman -Syu act
+# Config file: ~/.config/act
+#
+# Simulate PUSH-Event
+# act push
+
+name: Java CI with Gradle
+run-name: ${{ github.actor }} is testing out GitHub Actions
+
+on:
+    # Manual Trigger
+    workflow_dispatch:
+    # Push Trigger
+    push:
+        branches: [ "master" ]
+    pull_request:
+        branches: [ "master" ]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+    print-infos:
+        name: Printing some Information's
+        runs-on: ubuntu-latest
+        # runs-on: [ linux, x64 ]
+
+        steps:
+            -   run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+            -   run: echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+            -   run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+    
+    build:
+        name: Build the Project
+        needs: print-infos
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ ubuntu-latest , windows-latest, macos-latest ]
+                #                os: [ ubuntu-latest ]
+                include:
+                    -   os: ubuntu-latest
+                        gradle: ./gradlew
+                    -   os: windows-latest
+                        gradle: ./gradlew.bat
+                    -   os: macos-latest
+                        gradle: ./gradlew
+            runs-on: ${{ matrix.os }}
+        #        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    lfs: true
+
+            -   run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+            -   run: echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+            -   run: echo "This job's status is ${{ job.status }}."
+
+            -   name: List files in the repository
+                if: runner.os != 'Windows'
+                run: |
+                    ls -hal ${{ github.workspace }}
+
+            -   name: Compile
+                id: compile
+                uses: ./.github/actions/compile
+                with:
+                    java-version: "25"
+                    gradle-executable: ${{ matrix.gradle }}
+
+            -   name: Assembly
+                id: assembly
+                uses: ./.github/actions/assembly

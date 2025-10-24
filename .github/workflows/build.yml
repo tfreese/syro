@@ -42,24 +42,24 @@ jobs:
             -   run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
             -   run: echo "This job is now running on a ${{ runner.os }} server hosted by GitHub!"
             -   run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-    
+
     build:
         name: Build the Project
         needs: print-infos
         strategy:
             fail-fast: false
-            matrix:
-                os: [ ubuntu-latest , windows-latest, macos-latest ]
-                #                os: [ ubuntu-latest ]
-                include:
-                    -   os: ubuntu-latest
-                        gradle: ./gradlew
-                    -   os: windows-latest
-                        gradle: ./gradlew.bat
-                    -   os: macos-latest
-                        gradle: ./gradlew
-            runs-on: ${{ matrix.os }}
-        #        runs-on: ubuntu-latest
+        #            matrix:
+        #                #                os: [ ubuntu-latest , windows-latest, macos-latest ]
+        #                os: ubuntu-latest
+        #                include:
+        #                    -   os: ubuntu-latest
+        #                        gradle: ./gradlew
+        #                    -   os: windows-latest
+        #                        gradle: ./gradlew.bat
+        #                    -   os: macos-latest
+        #                        gradle: ./gradlew
+        #        runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
 
         steps:
             -   name: Checkout
@@ -81,8 +81,67 @@ jobs:
                 uses: ./.github/actions/compile
                 with:
                     java-version: "25"
-                    gradle-executable: ${{ matrix.gradle }}
+                    gradle-executable: "./gradlew"
+            #                    gradle-executable: ${{ matrix.gradle }}
+            #            -   name: Setup Java
+            #                uses: actions/setup-java@v5
+            #                with:
+            #                    java-version: 25
+            #                    distribution: "oracle"
+            #                    architecture: x64
+            #                    cache: "gradle" # Preserve ~/.gradle Cache over Jobs.
+            #
+            #            # Preserve ~/.gradle Cache over Jobs.
+            #            #            -   name: Setup Gradle
+            #            #                uses: gradle/actions/setup-gradle@v5.0.0
+            #            #                with:
+            #            #                    cache-read-only: false
+            #
+            #            -   name: Validate Gradle Wrapper
+            #                uses: gradle/actions/wrapper-validation@v3.5.0
+            #
+            #            -   name: Make Wrapper executable
+            #                #if: runner.os != 'Windows'
+            #                #if: contains(matrix.image, 'ubuntu') || contains(matrix.image, 'debian')
+            #                shell: bash
+            #                #run: chmod 755 gradlew
+            #                run: |
+            #                    if [ "${{ runner.os }}" = "Windows" ]; then
+            #                       echo "Not necessary on Windows."
+            #                    else
+            #                        echo "Make Wrapper executable."
+            #                        chmod 755 gradlew
+            #                    fi
+            #
+            #            -   name: Build with Gradle
+            #                run: ./gradlew build
+            #            #                run: ${{ matrix.gradle }} build
 
-            -   name: Assembly
-                id: assembly
-                uses: ./.github/actions/assembly
+            -   name: Assembly Libs
+                uses: actions/upload-artifact@v4
+                with:
+                    name: libs_${{ runner.os }}
+                    path: build/libs/*
+                    if-no-files-found: warn
+                    retention-days: 30
+
+            -   name: Assembly Test Reports
+                uses: actions/upload-artifact@v4
+                with:
+                    name: reports-test_${{ runner.os }}
+                    path: build/test-results/**/*.xml
+                    if-no-files-found: warn
+                    retention-days: 30
+
+            -   name: Assembly Reports
+                uses: actions/upload-artifact@v4
+                with:
+                    name: reports_${{ runner.os }}
+                    path: build/reports/**/*
+                    if-no-files-found: warn
+                    retention-days: 30
+
+#            -   name: Get Reports
+#                uses: actions/download-artifact@v4
+#                with:
+#                    name: reports_Linux
