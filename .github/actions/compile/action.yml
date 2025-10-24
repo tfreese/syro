@@ -20,10 +20,10 @@ runs:
                 cache: "gradle" # Preserve ~/.gradle Cache over Jobs.
 
         # Preserve ~/.gradle Cache over Jobs.
-        -   name: Setup Gradle
-            uses: gradle/actions/setup-gradle@v5.0.0
-            with:
-                cache-read-only: false
+        #        -   name: Setup Gradle
+        #            uses: gradle/actions/setup-gradle@v5.0.0
+        #            with:
+        #                cache-read-only: false
 
         -   name: Validate Gradle Wrapper
             uses: gradle/actions/wrapper-validation@v3.5.0
