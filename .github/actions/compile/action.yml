@@ -42,5 +42,5 @@ runs:
 
         -   name: Build with Gradle
             shell: bash
-            #                run: ./gradlew build
-            run: ${{ inputs.gradle-executable }} build
+            #                run: ./gradlew --no-configuration-cache --no-daemon build
+            run: ${{ inputs.gradle-executable }} --no-configuration-cache --no-daemon build
