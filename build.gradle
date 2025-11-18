@@ -777,10 +777,19 @@ tasks.register("buildAll", GradleBuild) {
 //     jvmArgs = ["--enable-native-access=ALL-UNNAMED"]
 // }
 
-// Start: gradle runMe
-// tasks.register("runMe", JavaExec) {
+// gradle exec --args=["-Dspring.profiles.active=file"]
+// gradle exec -Dspring.profiles.active=file
+// tasks.register("exec", JavaExec) {
 //     group = "MyTasks"
 //     description = "Run the main class with JavaExecTask"
+//
+//     // classpath = files(...)
+//     // classpath = configurations.runtimeClasspath // Doesn't contain Main-Class !
+//     classpath = sourceSets.main.runtimeClasspath
+//     mainClass = project.main
+//
+//     // args("-Dspring.profiles.active=file")
+//     // environment("spring.profiles.active", "file")
 //
 //     // executable = ".../java.exe"
 //     // workingDir = workDir
@@ -792,14 +801,21 @@ tasks.register("buildAll", GradleBuild) {
 //     //     server = true
 //     //     suspend = false
 //     // }
+// }
+
+// tasks.register("reuseExecTask", JavaExec) {
+//     JavaExec exec = tasks.named("exec", JavaExec).get()
 //
-//     // classpath = files(...)
-//     // classpath = configurations.runtimeClasspath // Doesn't contain Main-Class !
-//     classpath = sourceSets.main.runtimeClasspath
-//     mainClass = project.main
+//     group = exec.getGroup()
+//     description = exec.getDescription() + " with other Parameter"
 //
-//     // args("-Dspring.profiles.active=file")
-//     // environment("spring.profiles.active", "file")
+//     classpath = exec.getClasspath()
+//     executable = exec.getExecutable()
+//     mainClass = exec.getMainClass().get()
+//
+//     // args = ["-user", "USER", "-password", getProperty("user_psw")]
+//
+//     jvmArgs(exec.getJvmArgs())
 // }
 
 // Start: gradle bootRun --args="--spring.profiles.active=file"
