@@ -84,14 +84,30 @@ dependencyManagement {
 // versions["checkstyle"] = "10.21.0"
 // ext.set("versions", versions)
 
-// configurations.configureEach {
-//     exclude(group: "ch.qos.logback", module: "logback-classic")
-// }
-// configurations.all {
-//     exclude(group: "ch.qos.logback", module: "logback-classic")
-// }
-// configurations.testImplementation {
-//     exclude(group: "ch.qos.logback", module: "logback-classic")
+// configurations {
+//     // testImplementation {
+//     configureEach {
+//         exclude(group: "ch.qos.logback", module: "logback-classic")
+//
+//         resolutionStrategy {
+//             // Cancel the Build if multiple Versions found for a Dependency.
+//             // failOnVersionConflict()
+//
+//             // Fix to a specific Version, if multiple exist.
+//             force("org.codehaus.plexus:plexus-utils:3.1.1")
+//
+//             // Substitution of Dependencies.
+//             // dependencySubstitution {
+//             //     substitute(module("com.old:lib")).using(module("com.new:lib:2.0")).because("Description")
+//             // }
+//
+//             // Cache for dynamic Versions, like 1.+.
+//             // cacheDynamicVersionsFor(10, "minutes")
+//
+//             // Cache for Snapshots Versions.
+//             // cacheChangingModulesFor(24, "hours")
+//         }
+//     }
 // }
 
 // ant.lifecycleLogLevel = "INFO"
@@ -229,14 +245,15 @@ tasks.withType(AbstractArchiveTask).configureEach {
     }
 }
 
-test {
+// test {
+// tasks.named<Test>("test")
+tasks.withType(Test).configureEach {
     enabled = true
     ignoreFailures = false
+    useJUnitPlatform()
 
     // No parallel Tests: gradle --no-parallel --max-workers 1 test
     // or 'maxParallelForks = 1'
-
-    useJUnitPlatform()
 
     jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 
@@ -305,43 +322,6 @@ javadoc {
     options.encoding = "UTF-8"
 }
 
-tasks.register("listRepos") {
-    group = "MyTasks"
-    description = "Shows configured Repositories"
-
-    doLast {
-        println("Plugin Repositories:")
-        project.buildscript.repositories.each { println("- " + it.properties.displayName) }
-        // project.buildscript.repositories.getAsMap().forEach {
-        //     name, repo -> println("$name >> ${repo.properties.displayName}")
-        // }
-
-        println("Dependency Repositories:")
-        project.repositories.each { println("Name: " + it.name + "; url: " + it.url) }
-
-        // project.buildscript.repositories.each { println("Name: " + it.name + "; url: " + it.url) }
-        // project.buildscript.repositories.each { println(it.properties) }
-
-        // project.buildscript.repositories.each {
-        //     if (it.properties.displayName == "Gradle Central Plugin Repository") {
-        //         println("Name: " + it.displayName)
-        //     } else {
-        //         println("Name: " + it.name + "; url: " + it.url)
-        //     }
-        // }
-    }
-}
-
-tasks.register("listDependencies") {
-    group = "MyTasks"
-    description = "Shows configured Dependencies"
-
-    doLast {
-        println("Dependencies:")
-        project.configurations.compileClasspath.each { println(it) }
-    }
-}
-
 // --add-opens=java.base/java.util.concurrent=ALL-UNNAMED // No effect during compile.
 def compilerArgs = [
         //"--add-modules=ALL-SYSTEM"
@@ -403,25 +383,59 @@ def compilerArgs = [
         //, "-Xshare:off"
 ]
 
-[compileJava, compileTestJava]*.options*.encoding = "UTF-8"
-[compileJava, compileTestJava]*.options*.debug = true
+// [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
+// [compileJava, compileTestJava]*.options*.debug = true
 // [compileJava, compileTestJava]*.options*.incremental = true
 // [compileJava, compileTestJava]*.options*.compilerArgs += compilerArgs
 
-tasks.compileJava {
-    options.compilerArgs.addAll(compilerArgs)
-}
-tasks.compileTestJava {
+// tasks.compileJava {
+//     options.compilerArgs.addAll(compilerArgs)
+// }
+// tasks.compileTestJava {
+//     options.compilerArgs.addAll(compilerArgs)
+// }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.debug = true
     options.compilerArgs.addAll(compilerArgs)
 }
 
-// tasks.withType(JavaCompile).configureEach {
-//     // options.encoding = "UTF-8"
-//
-//     doFirst {
-//         println("Compiler args: " + options.compilerArgs)
-//     }
-// }
+tasks.register("listRepos") {
+    group = "MyTasks"
+    description = "Shows configured Repositories"
+
+    doLast {
+        println("Plugin Repositories:")
+        project.buildscript.repositories.each { println("- " + it.properties.displayName) }
+        // project.buildscript.repositories.getAsMap().forEach {
+        //     name, repo -> println("$name >> ${repo.properties.displayName}")
+        // }
+
+        println("Dependency Repositories:")
+        project.repositories.each { println("Name: " + it.name + "; url: " + it.url) }
+
+        // project.buildscript.repositories.each { println("Name: " + it.name + "; url: " + it.url) }
+        // project.buildscript.repositories.each { println(it.properties) }
+
+        // project.buildscript.repositories.each {
+        //     if (it.properties.displayName == "Gradle Central Plugin Repository") {
+        //         println("Name: " + it.displayName)
+        //     } else {
+        //         println("Name: " + it.name + "; url: " + it.url)
+        //     }
+        // }
+    }
+}
+
+tasks.register("listDependencies") {
+    group = "MyTasks"
+    description = "Shows configured Dependencies"
+
+    doLast {
+        println("Dependencies:")
+        project.configurations.compileClasspath.each { println(it) }
+    }
+}
 
 tasks.register("sourcesJar", Jar) {
     group = "MyTasks"
