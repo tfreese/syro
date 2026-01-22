@@ -827,9 +827,14 @@ tasks.register("buildAll", GradleBuild) {
 //     executable = exec.getExecutable()
 //     mainClass = exec.getMainClass().get()
 //
-//     // args = ["-user", "USER", "-password", getProperty("user_psw")]
-//
 //     jvmArgs(exec.getJvmArgs())
+//
+//     // No Exception if Property not found but with default, CI friendly.
+//     args = ["-user", "USER", "-password", findProperty("user_psw") ?: "null"]
+//     //args = ["-user", "USER", "-password", providers.gradleProperty("user_psw").orElse("null").get()] // Best Practice.
+//
+//     // Exception if Property not found.
+//     //args = ["-user", "USER", "-password", getProperty("user_psw")]
 // }
 
 // Start: gradle bootRun --args="--spring.profiles.active=file"
