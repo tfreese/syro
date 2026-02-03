@@ -385,7 +385,6 @@ def compilerArgs = [
 
 // [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 // [compileJava, compileTestJava]*.options*.debug = true
-// [compileJava, compileTestJava]*.options*.incremental = true
 // [compileJava, compileTestJava]*.options*.compilerArgs += compilerArgs
 
 // tasks.compileJava {
