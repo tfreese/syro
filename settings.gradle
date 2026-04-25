@@ -11,7 +11,7 @@ pluginManagement {
 }
 
 // Without rootProject.name the Name of the Projekt-Directory is used.
-//rootProject.name = "syro"
+// rootProject.name = "syro"
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -82,7 +82,7 @@ dependencyResolutionManagement {
     }
 }
 
-// include "syro-core"
+// include("syro-core")
 
 // https://docs.gradle.org/8.8/userguide/directory_layout.html
 // GRADLE_HOME/init.d/cache-settings.gradle
