@@ -58,7 +58,7 @@ public final class ExceptionSerializer implements Serializer<Exception> {
             // Create an instance of the Invokable class by calling the exact handle, pass in the param value.
             exception = (Exception) invokableClassConstructor.invokeWithArguments(message);
         }
-        catch (Throwable ex) {
+        catch (Throwable _) {
             exception = new Exception(message);
         }
 
@@ -77,7 +77,7 @@ public final class ExceptionSerializer implements Serializer<Exception> {
 
         final Serializer<StackTraceElement> stackTraceElementSerializer = StackTraceElementSerializer.getInstance();
 
-        for (StackTraceElement stackTraceElement : stackTrace) {
+        for (final StackTraceElement stackTraceElement : stackTrace) {
             stackTraceElementSerializer.write(writer, stackTraceElement);
         }
     }

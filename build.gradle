@@ -1,5 +1,5 @@
 // Execute Tasks in SubModule: gradle MODUL:clean build
-//buildscript {
+// buildscript {
 //    repositories {
 //        mavenLocal()
 //        mavenCentral()
@@ -17,8 +17,9 @@ plugins {
     // id("com.github.ben-manes.versions") version("$version_gradleVersionsPlugin")
     id("java-library")
     id("maven-publish")
+    id("ivy-publish")
     id("io.spring.dependency-management") version("$version_springDependencyManagementPlugin")
-    // id("name.remal.sonarlint") version("$version_nameRemalSonarlintGradlePlugin")
+    id("name.remal.sonarlint") version("$version_nameRemalSonarlintGradlePlugin")
     id("checkstyle")
     // id("jacoco")
 }
@@ -113,11 +114,11 @@ dependencyManagement {
 // ant.lifecycleLogLevel = "INFO"
 //
 //// Register ANT-Tasks as Gradle-Tasks with Prefix "ant-" in Group "other".
-//ant.importBuild("ant_build.xml") { antTargetName -> "ant-" + antTargetName }
-//ant.properties["version"] = project.version
+// ant.importBuild("ant_build.xml") { antTargetName -> "ant-" + antTargetName }
+// ant.properties["version"] = project.version
 //
 //// Set group property for all Ant tasks.
-//tasks.matching { task -> task.name.startsWith("ant-") }.configureEach{ group = "ant" }
+// tasks.matching { task -> task.name.startsWith("ant-") }.configureEach{ group = "ant" }
 //
 // "ant-target" {
 //     ant.properties["version"] = version
@@ -158,7 +159,7 @@ dependencyManagement {
 // }
 
 dependencies {
-    //implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
+    // implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     api("io.netty:netty-buffer")
     // compileOnly("io.netty:netty-buffer")
     //         {
@@ -166,9 +167,9 @@ dependencies {
     // }
 
     // JARs aus libs-Folder.
-    //implementation fileTree(dir: "libs", include: "*.jar")
+    // implementation fileTree(dir: "libs", include: "*.jar")
 
-    testImplementation("io.netty:netty-buffer")
+    // testImplementation("io.netty:netty-buffer")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
@@ -479,8 +480,8 @@ var reportsZip = tasks.register("reportsZip", Zip) {
     mustRunAfter("test")
     mustRunAfter("checkstyleMain")
     mustRunAfter("checkstyleTest")
-    // mustRunAfter("sonarlintMain")
-    // mustRunAfter("sonarlintTest")
+    mustRunAfter("sonarlintMain")
+    mustRunAfter("sonarlintTest")
 
     archiveBaseName.set("reports")
     from("build/reports")
@@ -499,7 +500,7 @@ tasks.named("assemble") {
 
 publishing {
     publications {
-        syro(MavenPublication) {
+        syroMvn(MavenPublication) {
             // afterEvaluate {
             //     // groupId = "..."
             //     // artifactId = "..."
@@ -515,7 +516,26 @@ publishing {
                 }
             }
 
-            from(components.java)
+            from(components.java) // Jar with Dependencies.
+
+            // Only JAR, no Dependencies.
+            // artifact(tasks.named("jar")) {
+            //     type       = "source"
+            //     extension  = "jar"
+            //     classifier = "sources"
+            // }
+            artifact(tasks.named("sourcesJar"))
+            artifact(tasks.named("testJar"))
+            artifact(tasks.named("testSourcesJar"))
+            artifact(tasks.named("javadocJar"))
+            // artifact("macos-app-x64.dmg") {
+            //     classifier("macos-x64")
+            //     extension("dmg")
+            // }
+            // artifact("windows-app-x64.exe") {
+            //     classifier("windows-x64")
+            //     extension("exe")
+            // }
 
             // java-library:
             // - api = <scope>compile</scope>
@@ -568,18 +588,33 @@ publishing {
                 //     url = "http://example.com/my-library/"
                 // }
             }
+        }
 
-            artifact(sourcesJar)
-            artifact(testJar)
-            artifact(testSourcesJar)
-            artifact(javadocJar)
-            // artifact("macos-app-x64.dmg") {
-            //     classifier("macos-x64")
-            //     extension("dmg")
+        syroIvy(IvyPublication) {
+            organisation = project.group
+            module = project.name
+            revision = project.version //+ "_" + new Date().format("yyyyMMdd_HHmmss")
+
+            from(components.java) // With Dependencies.
+
+            // Only JAR, no Dependencies in ivy.xml
+            // artifact(tasks.named("jar")) {
+            //     // type = "ear"
             // }
-            // artifact("windows-app-x64.exe") {
-            //     classifier("windows-x64")
-            //     extension("exe")
+
+            // Transfer the Dependency-Versions to the Ivy-Descriptor.
+            versionMapping {
+                usage("java-api") { fromResolutionResult() }
+                usage("java-runtime") { fromResolutionResult() }
+            }
+
+            // descriptor {
+            //     withXml {
+            //         // Without Descriptor, delete Dependencies-Node.
+            //         asNode().getAt("dependencies").forEach { node ->
+            //             (node as groovy.util.Node).setValue("")
+            //         }
+            //     }
             // }
         }
 
@@ -598,18 +633,30 @@ publishing {
 
     repositories {
         maven {
-            def releasesRepoUrl = layout.buildDirectory.dir("repos/releases")
-            def snapshotsRepoUrl = layout.buildDirectory.dir("repos/snapshots")
+            name = "localMvn"
+            // url = uri("https://repo.example.com/ivy-releases")
+
+            def releasesRepoUrl = layout.buildDirectory.dir("mvn-repo/releases")
+            def snapshotsRepoUrl = layout.buildDirectory.dir("mvn-repo/snapshots")
 
             // url = project.hasProperty("release") ? releasesRepoUrl : snapshotsRepoUrl
             url = version.endsWith("RELEASE") ? releasesRepoUrl : snapshotsRepoUrl
-            name = "otherLocal"
+
             allowInsecureProtocol = true
 
             // credentials {
-            //     username = deployRepoUsername
-            //     password = deployRepoPassword
+            //     username = providers.environmentVariable("IVY_REPO_USER").orElse("").get()
+            //     password = providers.environmentVariable("IVY_REPO_PASS").orElse("").get()
             // }
+        }
+        ivy {
+            name = "localIvy"
+            url = uri(layout.buildDirectory.dir("ivy-repo"))
+
+            patternLayout {
+                artifact("[organisation]/[module](/[branch])/[type]s/[artifact]-[revision].[ext]")
+                ivy("[organization]/[module](/[branch])/[type]s/[artifact]-[revision].[ext]")
+            }
         }
     }
 }
@@ -642,89 +689,89 @@ tasks.withType(Checkstyle).configureEach {
 
 // https://rules.sonarsource.com/java
 // https://github.com/remal-gradle-plugins/sonarlint
-// sonarLint {
-//     ignoreFailures = true
-//     isGeneratedCodeIgnored = true
-//
-//     // nodeJs {
-//     //     detectNodeJs = false    // If not exist, try to Download: https://nodejs.org/dist
-//     //     logNodeJsNotFound = false
-//     // }
-//
-//     languages {
-//         include("java") // Enable Java language only, all other languages become disabled
-//         // exclude("kotlin") // Disable Kotlin language, all other languages remain enabled
-//     }
-//
-//     logging {
-//         withDescription = false // Show rule descriptions in console output
-//     }
-//
-//     rules {
-//         enable(
-//                 // Method names should comply with a naming convention. (that is disabled by default)
-//                 "java:S100",
-//                 // Class names should comply with a naming convention.(that is disabled by default)
-//                 "java:S101",
-//                 // Lines should not be too long.
-//                 "java:S103",
-//                 // Tabulation characters should not be used.
-//                 "java:S105"
-//         )
-//         disable(
-//                 // Replace this use of System.out by a logger.
-//                 "java:S106",
-//                 // Inheritance tree of classes should not be too deep.
-//                 "java:S110",
-//                 // Define and throw a dedicated exception instead of using a generic one.
-//                 "java:S112",
-//                 // This block of commented-out lines of code should be removed.
-//                 "java:S125",
-//                 // Loops should not contain more than a single "break" or "continue" statement.
-//                 "java:S135",
-//                 // Mergeable "if" statements should be combined.
-//                 "java:S1066",
-//                 // Refactor your code to get this URI from a customizable parameter.
-//                 "java:S1075",
-//                 // Public constants and fields initialized at declaration should be "static final" rather than merely "final"
-//                 // Collide with injected Resources.
-//                 "java:S1170",
-//                 // Catch Exception instead of Throwable.
-//                 "java:S1181",
-//                 //  Define a constant instead of duplicating this literal.
-//                 "java:S1192",
-//                 // Math should not be performed on floats.
-//                 "java:S2164",
-//                 // Invoke method(s) only conditionally (Logger).
-//                 "java:S2629",
-//                 // The value returned from a stream read should be checked.
-//                 "java:2674",
-//                 // Cognitive Complexity of methods should not be too high.
-//                 "java:S3776",
-//                 // The Singleton design pattern should be used with care.
-//                 "java:S6548",
-//                 // Remove this field injection and use constructor injection instead.
-//                 "java:S6813",
-//                 // Don't use the query "SELECT *".
-//                 "java:S6905"
-//         )
-//
-//         rule("java:S103") {
-//             property("maximumLineLength", "180")
-//         }
-//
-//         // Constructor/Method has <N> parameters, which is greater than <X> authorized.
-//         rule("java:S107") {
-//             property("max", "10")
-//             property("constructorMax", "10")
-//         }
-//     }
-//
-//     // Allow upper camel-case for type parameter names
-//     // ruleParameter("java:S119", "format", "^[A-Z][a-zA-Z0-9]*$")
-//
-//     // ignoredPaths.add("**/demo/FailsafeDemo.java")
-// }
+sonarLint {
+    ignoreFailures = true
+    isGeneratedCodeIgnored = true
+
+    // nodeJs {
+    //     detectNodeJs = false    // If not exist, try to Download: https://nodejs.org/dist
+    //     logNodeJsNotFound = false
+    // }
+
+    languages {
+        include("java") // Enable Java language only, all other languages become disabled
+        // exclude("kotlin") // Disable Kotlin language, all other languages remain enabled
+    }
+
+    logging {
+        withDescription = false // Show rule descriptions in console output
+    }
+
+    rules {
+        enable(
+                // Method names should comply with a naming convention. (that is disabled by default)
+                "java:S100",
+                // Class names should comply with a naming convention.(that is disabled by default)
+                "java:S101",
+                // Lines should not be too long.
+                "java:S103",
+                // Tabulation characters should not be used.
+                "java:S105"
+        )
+        disable(
+                // Replace this use of System.out by a logger.
+                "java:S106",
+                // Inheritance tree of classes should not be too deep.
+                "java:S110",
+                // Define and throw a dedicated exception instead of using a generic one.
+                "java:S112",
+                // This block of commented-out lines of code should be removed.
+                "java:S125",
+                // Loops should not contain more than a single "break" or "continue" statement.
+                "java:S135",
+                // Mergeable "if" statements should be combined.
+                "java:S1066",
+                // Refactor your code to get this URI from a customizable parameter.
+                "java:S1075",
+                // Public constants and fields initialized at declaration should be "static final" rather than merely "final"
+                // Collide with injected Resources.
+                "java:S1170",
+                // Catch Exception instead of Throwable.
+                "java:S1181",
+                //  Define a constant instead of duplicating this literal.
+                "java:S1192",
+                // Math should not be performed on floats.
+                "java:S2164",
+                // Invoke method(s) only conditionally (Logger).
+                "java:S2629",
+                // The value returned from a stream read should be checked.
+                "java:2674",
+                // Cognitive Complexity of methods should not be too high.
+                "java:S3776",
+                // The Singleton design pattern should be used with care.
+                "java:S6548",
+                // Remove this field injection and use constructor injection instead.
+                "java:S6813",
+                // Don't use the query "SELECT *".
+                "java:S6905"
+        )
+
+        rule("java:S103") {
+            property("maximumLineLength", "180")
+        }
+
+        // Constructor/Method has <N> parameters, which is greater than <X> authorized.
+        rule("java:S107") {
+            property("max", "10")
+            property("constructorMax", "10")
+        }
+    }
+
+    // Allow upper camel-case for type parameter names
+    // ruleParameter("java:S119", "format", "^[A-Z][a-zA-Z0-9]*$")
+
+    // ignoredPaths.add("**/demo/FailsafeDemo.java")
+}
 
 // DefaultModuleComponentIdentifier
 // def removeIf = { ModuleComponentIdentifier coordinate ->
