@@ -22,7 +22,6 @@ dependencyResolutionManagement {
         mavenCentral()
 //         maven {
 //             url = uri("https://repository.primefaces.org")
-//             name = "primefaces"
 //             content {
 //                 excludeGroupByRegex("de.freese\\..*")
 //             }
@@ -37,7 +36,6 @@ dependencyResolutionManagement {
 //         }
 //         maven {
 //             url = uri("https://repo.gradle.org/gradle/libs-releases")
-//             name = "gradleLibsReleases"
 //             content {
 //                 excludeGroupByRegex("de.freese\\..*")
 //             }
@@ -60,20 +58,20 @@ dependencyResolutionManagement {
 //             name = "ivy"
 //             patternLayout {
 //                 // ivy pattern supports transitive dependencies.
-//                 // ivy "app1/[organisation]/ivys/[artifact]-[revision].xml"
-//                 // ivy "app2/[organisation]/ivys/[artifact]-[revision].xml"
-//                 artifact "app1/[organisation]/jars/[artifact]-[revision].[ext]"
-//                 artifact "app2/[organisation]/jars/[artifact]-[revision].[ext]"
+//                 // ivy("app1/[organisation]/ivys/[artifact]-[revision].xml")
+//                 // ivy("app2/[organisation]/ivys/[artifact]-[revision].xml")
+//                 artifact("app1/[organisation]/jars/[artifact]-[revision].[ext]")
+//                 artifact("app2/[organisation]/jars/[artifact]-[revision].[ext]")
 //             }
 //             metadataSources {
 //                 artifact() // Only look for Jar.
 //             }
 //             content {
-//                 excludeGroup "org.orga"
+//                 excludeGroup("org.orga")
 //                 excludeGroupByRegex("com\\..*")
-//                 excludeGroupByRegex "io\\..*"
-//                 excludeGroupByRegex "jakarta\\..*"
-//                 excludeGroupByRegex "org\\..*"
+//                 excludeGroupByRegex("io\\..*")
+//                 excludeGroupByRegex("jakarta\\..*")
+//                 excludeGroupByRegex("org\\..*")
 //             }
 //         }
 //
@@ -83,27 +81,6 @@ dependencyResolutionManagement {
 }
 
 // include("syro-core")
-
-// https://docs.gradle.org/8.8/userguide/directory_layout.html
-// GRADLE_HOME/init.d/cache-settings.gradle
-// GRADLE_USER_HOME/init.gradle
-// beforeSettings { settings ->
-//     settings.caches {
-//         //cleanup = Cleanup.ALWAYS  // Cleanup is performed at the end of each build session.
-//         cleanup = Cleanup.DEFAULT // Cleanup is performed periodically in the background (currently once every 24 hours).
-//         //cleanup = Cleanup.DISABLED
-//
-//         releasedWrappers.removeUnusedEntriesAfterDays = 45
-//         snapshotWrappers.removeUnusedEntriesAfterDays = 10
-//         downloadedResources.removeUnusedEntriesAfterDays = 45
-//         createdResources.removeUnusedEntriesAfterDays = 10
-//         buildCache.removeUnusedEntriesAfterDays = 5 // >= 8.8
-//
-//         // if (GradleVersion.current().equals(GradleVersion.version("8.9"))) {
-//         //     buildCache.removeUnusedEntriesAfterDays = 5
-//         // }
-//     }
-// }
 
 println("")
 println("Gradle version: ${GradleVersion.current().version}")
