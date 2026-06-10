@@ -1,0 +1,126 @@
+ant.lifecycleLogLevel = "INFO"
+
+###################################################################################################
+ant.importBuild ist not ConfigurationCache (CC) compatible!
+
+// Register ANT-Tasks as Gradle-Tasks with Prefix "ant-" in Group "other".
+ant.importBuild("ant_build.xml") { antTargetName -> "ant-" + antTargetName }
+
+// Set group property for all Ant tasks.
+tasks.matching { task -> task.name.startsWith("ant-") }.configureEach{ group = "ant" }
+
+"ant-target" {
+    ant.properties["version"] = version
+}
+
+###################################################################################################
+Or as JavaExec
+
+//configurations {
+//     antRuntime {}
+//}
+
+//dependencies {
+//    antRuntime("org.apache.ant:ant:1.10.17")
+//}
+
+// CC compatible!
+def configureAntJavaExec = { JavaExec task ->
+    task.group = "myTasks"
+    task.mainClass = "org.apache.tools.ant.launch.Launcher"
+    task.maxHeapSize = "256m"
+    //task.classpath = configurations.antRuntime
+
+    // CC compatible: Resolve Path with Provider.
+    Provider<String> gradleHome = providers.systemProperty("gradle.home")
+            .orElse(providers.environmentVariable("GRADLE_HOME"))
+            .orElse(gradle.gradleHomeDir.absolutePath)
+
+    // Embedded Ant from the Gradle-Distribution.
+    task.classpath = fileTree(gradleHome.getOrNull() + "/lib") {
+        include("ant-*.jar")
+        include("ant-launcher-*.jar")
+    }
+
+    task.args = [
+            "-f", layout.projectDirectory.file("build.xml").asFile.absolutePath,
+            "-Dbasedir=" + layout.projectDirectory.asFile.absolutePath
+    ]
+}
+
+tasks.register("createHelp", JavaExec) {
+    configureAntJavaExec(it)
+
+    description = "Erstellt hilfe.jar"
+
+    // Use Build-Cache, default active for Jar-Tasks.
+    inputs.dir(layout.projectDirectory.dir("src").dir("main").dir("resources"))
+    outputs.dir(layout.projectDirectory.dir("dist"))
+
+    // args = [...] overwrites
+    // args(...) appends
+    args("myAntTask")
+}
+
+###################################################################################################
+Direct ANT usage.
+
+tasks.register("antDemo") {
+    group = "MyTasks"
+
+    doLast {
+        ant.lifecycleLogLevel = "INFO"
+
+        ant.echo("Hello with ant: " + project.name)
+
+        Directory downloadFolder = layout.buildDirectory.dir("download").get()
+
+        delete(downloadFolder)
+        mkdir(downloadFolder)
+
+        println("exists build/download/get.html: " + downloadFolder.file("get.html").getAsFile().exists())
+        println("exists build/download/get.html: " + file("$project.rootDir/build/download/get.html").exists())
+
+        ant.get(src: "https://ant.apache.org/manual/Tasks/get.html",
+                dest: downloadFolder,
+                verbose: true
+        )
+
+        ant.get(dest: downloadFolder, verbose: true) {
+            url(url: "https://ant.apache.org/manual/Tasks/echo.html")
+            url(url: "https://ant.apache.org/manual/Tasks/copy.html")
+        }
+
+        def path = ant.path {
+            fileset(dir: downloadFolder, includes: " **/*.html")
+        }
+
+        path.list().each {
+            println(it)
+        }
+
+        fileTree(downloadFolder).each { println it }
+        // fileTree(dir: downloadFolder, include: '**/*.html').each { println it }
+
+        ant.sync(todir: layout.buildDirectory.dir("synced").get(), overwrite: true, verbose: true) {
+            fileset(dir: downloadFolder)
+        }
+
+        // Funktioniert nicht, wegen Fehler: "Could not find method from() for arguments ..."
+        // sync {
+        //     from layout.buildDirectory.dir("download")
+        //     into layout.buildDirectory.dir("synced")
+        //     preserve {
+        //         include("extraDir/**")
+        //         include("dir1/**")
+        //         exclude("dir1/extra.txt")
+        //     }
+        // }
+
+        myMethod(layout.buildDirectory)
+    }
+}
+
+def myMethod(Provider<Directory> directoryProvider) {
+    println(directoryProvider.get())
+}

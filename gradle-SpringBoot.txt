@@ -1,0 +1,15 @@
+// Start: gradle bootRun --args="--spring.profiles.active=file"
+// The archive name. If the name has not been explicitly set, the pattern for the name is:
+// [archiveBaseName]-[archiveAppendix]-[archiveVersion]-[archiveClassifier].[archiveExtension]
+springBoot {
+    mainClass = project.main
+    archiveFileName = "my-boot.jar"
+}
+
+// gradle bootRun --args="--spring.profiles.active=file --server.port=65111"
+bootRun {
+    args = [
+            "--enable-native-access=ALL-UNNAMED"
+    ]
+    jvmArgs = ["--enable-native-access=ALL-UNNAMED"]
+}

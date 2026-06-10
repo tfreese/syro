@@ -1,0 +1,74 @@
+tasks.register("testZip1", Zip) {
+    group = "MyTasks"
+
+    archiveFileName = "1.zip"
+    destinationDirectory = layout.buildDirectory
+
+    // from(compileJava)
+    // from(processResources)
+    // into("lib") {
+    //     from(configurations.runtime)
+    // }
+
+    // into("lib") {
+    //     from(jar)
+    //     from(configurations.runtimeClasspath)
+    // }
+
+    // 1 : 1 copy
+    // from layout.projectDirectory.dir("..").dir("data")
+
+    from(layout.projectDirectory) {
+        include("gradle.properties")
+    }
+
+    into("a") {
+        // from(layout.projectDirectory.dir("data").dir("html"))
+        from(layout.projectDirectory.file("build.gradle"))
+    }
+
+    into("b") {
+        from(layout.projectDirectory.file("settings.gradle"))
+    }
+}
+
+tasks.register("testZip2") {
+    group = "MyTasks"
+
+    Directory projectDir = layout.projectDirectory
+    DirectoryProperty buildDirectoryProperty = layout.buildDirectory
+
+    doLast {
+        ant.zip(destfile: buildDirectoryProperty.file("2.zip").get(),
+                level: 9) {
+            fileset(dir: projectDir,
+                    includes: "gradle.properties"
+            )
+            zipFileSet(dir: projectDir,
+                    includes: "build.gradle",
+                    prefix: "a"
+            )
+            zipFileSet(dir: projectDir,
+                    includes: "settings.gradle",
+                    prefix: "b"
+            )
+        }
+
+        // zip {
+        //     archiveFileName = " 2.zip"
+        //     destinationDirectory = layout.buildDirectory
+        //
+        //     from(layout.projectDirectory) {
+        //         include("gradle.properties")
+        //     }
+        //
+        //     into("a") {
+        //         from(layout.projectDirectory.file("build.gradle"))
+        //     }
+        //
+        //     into("b") {
+        //         from(layout.projectDirectory.file("settings.gradle"))
+        //     }
+        // }
+    }
+}

@@ -1,0 +1,18 @@
+// Dynamic Tasks
+def apps = ["App1", "App2"]
+def appProperties = [:]
+appProperties["valueApp1"] = "app1-value"
+appProperties["valueApp2"] = "app2-value"
+
+apps.each { app ->
+    tasks.register("taskFor${app}") {
+        group = "MyTasks"
+        description = "some generic task"
+
+        var value = "${appProperties."value$app"}"
+
+        doLast {
+            logger.lifecycle("app value: {}", value)
+        }
+    }
+}

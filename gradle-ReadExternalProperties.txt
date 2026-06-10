@@ -1,0 +1,12 @@
+//apply from: "../dependencies.gradle"
+//apply from: "../dependencies.properties"
+
+Properties properties = new Properties()
+
+try (InputStream input = new FileInputStream(file("../gradle.properties"))) {
+    properties.load(input)
+}
+
+for (String key : properties.stringPropertyNames()) {
+    ext.set(key, properties.getProperty(key))
+}
