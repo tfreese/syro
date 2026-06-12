@@ -67,32 +67,6 @@ dependencyManagement {
     }
 }
 
-// configurations {
-//     // testImplementation {
-//     configureEach {
-//         exclude(group: "ch.qos.logback", module: "logback-classic")
-//
-//         resolutionStrategy {
-//             // Cancel the Build if multiple Versions found for a Dependency.
-//             // failOnVersionConflict()
-//
-//             // Fix to a specific Version, if multiple exist.
-//             force("org.codehaus.plexus:plexus-utils:3.1.1")
-//
-//             // Substitution of Dependencies.
-//             // dependencySubstitution {
-//             //     substitute(module("com.old:lib")).using(module("com.new:lib:2.0")).because("Description")
-//             // }
-//
-//             // Cache for dynamic Versions, like 1.+.
-//             // cacheDynamicVersionsFor(10, "minutes")
-//
-//             // Cache for Snapshots Versions.
-//             // cacheChangingModulesFor(24, "hours")
-//         }
-//     }
-// }
-
 // sourceSets {
 //     that.resources {
 //         srcDir(layout.projectDirectory.dir("..").dir("that"))
