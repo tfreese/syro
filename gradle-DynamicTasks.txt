@@ -16,3 +16,46 @@ apps.each { app ->
         }
     }
 }
+
+// Copy + Sync Multiple Directories
+def userName = providers.systemProperty("user.name").get()
+
+def deployDirs = [
+        "C:/Users/${userName}/folder1",
+        "C:/Users/${userName}/folder2"
+]
+
+def bootJar = tasks.named("bootJar")
+
+def deployTasks = deployDirs.withIndex().collect { dir, i ->
+    def copyTask = tasks.register("copyApp${i}", Copy) {
+        dependsOn(tasks.named("build"))
+
+        from(bootJar)
+        from(layout.projectDirectory.file("startApp.cmd"))
+        into(dir)
+
+        // destinationDir = into(...)
+        doFirst {
+            logger.lifecycle("Copy to: {}", destinationDir)
+        }
+    }
+
+    def syncTask = tasks.register("syncJre${i}", Sync) {
+        dependsOn(copyTask)
+
+        from(jre_home)
+        into("${dir}/jre")
+
+        // destinationDir = into(...)
+        doFirst {
+            logger.lifecycle("Copy to: {}", destinationDir)
+        }
+    }
+
+    syncTask
+}
+
+tasks.register("deploy") {
+    dependsOn(deployTasks)
+}
