@@ -124,3 +124,202 @@ tasks.register("antDemo") {
 def myMethod(Provider<Directory> directoryProvider) {
     println(directoryProvider.get())
 }
+
+###################################################################################################
+As AntExec Task.
+
+build-logic/:
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.MapProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.ProviderFactory;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.Optional;
+
+/**
+ * CC-kompatiblen JavaExec-Task für die Ausführung von Ant-Targets über den in Gradle eingebetteten Ant.
+ *
+ * <p>Verwendung in build.gradle:</p>
+ * <pre>{@code
+ * tasks.register('myTarget', AntExec) {
+ *     antTarget = 'compile'
+ * }
+ *
+ * @Input = Wert beeinflusst das Ergebnis des Tasks.
+ * @Internal = Kein Teil der Task-Signatur.
+ * }
+ * </pre>
+ *
+ */
+@SuppressWarnings("ConstructorNotProtectedInAbstractClass")
+public abstract class AntExec extends JavaExec {
+    /**
+     * Constructor MUST be public even in abstract Classes!
+     */
+    // @SuppressWarnings("java:S5993")
+    public AntExec() {
+        super();
+
+        setDescription("Führt ein Ant-Target über embedded Ant aus (CC-kompatibel)");
+        getMainClass().set("org.apache.tools.ant.launch.Launcher");
+        setMaxHeapSize("512m");
+
+        // Conventions (überschreibbar pro Task).
+        getAntBuildFile().convention(getLayout().getProjectDirectory().file("build.xml"));
+        getBaseDir().convention(getLayout().getProjectDirectory());
+        getAntProperties().convention(Collections.emptyMap());
+
+        // Gradle-Home: System-Property hat Vorrang vor Env-Variable.
+        getGradleHomePath().convention(
+                getProviders().systemProperty("gradle.home")
+                        .orElse(getProviders().environmentVariable("GRADLE_HOME"))
+        );
+
+        // Classpath: Embedded Ant aus der Gradle-Distribution
+        // final Provider<String> gradleHome = getProviders().systemProperty("gradle.home")
+        //         .orElse(getProviders().environmentVariable("GRADLE_HOME"))
+        //         .orElse(getProject().getGradle().getGradleHomeDir().getAbsolutePath());
+        //
+        // setClasspath(getProject().fileTree(gradleHome.get() + "/lib", tree -> {
+        //     tree.include("ant-*.jar");
+        //     tree.include("ant-launcher-*.jar");
+        // }));
+
+        // Ant steuert Up-to-Date-Logik selbst.
+        // getOutputs().upToDateWhen(task -> false);
+    }
+
+    @Override
+    public void exec() {
+        // Classpath lazy in der Execution-Phase auflösen.
+        setClasspath(resolveAntClasspath());
+
+        final List<String> arguments = new ArrayList<>();
+        arguments.add("-f");
+        arguments.add(getAntBuildFile().get().getAsFile().getAbsolutePath());
+        arguments.add("-Dbasedir=" + getBaseDir().get().getAsFile().getAbsolutePath());
+
+        // Zusätzliche -D Properties.
+        getAntProperties().get().forEach((key, value) ->
+                arguments.add("-D" + key + "=" + value)
+        );
+
+        // Ant-Target als letztes Argument.
+        arguments.add(getAntTarget().get());
+
+        setArgs(arguments);
+
+        super.exec();
+    }
+
+    /**
+     * Pfad zur Ant-Build-Datei (Default: ant-client-integration.xml).
+     */
+    @InputFile
+    public abstract RegularFileProperty getAntBuildFile();
+
+    // @Classpath
+    // @Internal
+    // @PathSensitive(PathSensitivity.RELATIVE)
+    // public abstract ConfigurableFileCollection getAntClasspath();
+
+    /**
+     * Zusätzliche Ant-Properties als Map (-Dkey=value).
+     **/
+    @Input
+    @Optional
+    public abstract MapProperty<String, String> getAntProperties();
+
+    /**
+     * Das auszuführende Ant-Target.
+     */
+    @Input
+    public abstract Property<String> getAntTarget();
+
+    /**
+     * basedir für Ant (Default: Projektverzeichnis).
+     */
+    @Internal
+    public abstract DirectoryProperty getBaseDir();
+
+    /**
+     * Pfad zum Gradle-Home-Verzeichnis.
+     * <p>Convention: System-Property {@code gradle.home} → Env {@code GRADLE_HOME}.</p>
+     * <p>Wird vom Gradle Wrapper automatisch gesetzt.</p>
+     */
+    @Internal
+    public abstract Property<String> getGradleHomePath();
+
+    // Injizierte Services (CC-sicher).
+
+    @Inject
+    protected abstract ProjectLayout getLayout();
+
+    @Inject
+    protected abstract ObjectFactory getObjects();
+
+    @Inject
+    protected abstract ProviderFactory getProviders();
+
+    /**
+     * Löst die Ant-JARs aus der Gradle-Distribution auf.
+     * Wird erst in der Execution-Phase aufgerufen – keine Project-Referenz nötig.
+     */
+    private ConfigurableFileTree resolveAntClasspath() {
+        final String home = getGradleHomePath().getOrNull();
+
+        if (home == null) {
+            final String message = """
+                    %s:
+                    Gradle-Home konnte nicht ermittelt werden.
+                    Setze 'gradleHomePath' explizit, die System-Property 'gradle.home' oder die Umgebungsvariable 'GRADLE_HOME'.
+                    """;
+
+            getLogger().error(message);
+
+            throw new IllegalStateException(message);
+        }
+
+        final ConfigurableFileTree antJars = getObjects()
+                .fileTree()
+                .from(home + "/lib");
+        antJars.include("ant-*.jar", "ant-launcher-*.jar");
+
+        return antJars;
+    }
+}
+
+build.gradle:
+
+import de.gradle.java.AntExec
+
+tasks.register("createAntExec", AntExec) {
+    group = "myTasks"
+    description = "Führt ANT aus"
+
+    // Use Build-Cache, default active for Jar-Tasks.
+    inputs.dir(layout.projectDirectory.dir("src").dir("main").dir("resources"))
+    outputs.dir(layout.projectDirectory.dir("dist"))
+
+    antBuildFile = layout.projectDirectory.file("ant-help.xml")
+    antTarget = "createHelp"
+    gradleHomePath = gradle.gradleHomeDir.absolutePath
+
+    // antProperties = ["build.env": "production", "verbose": "true"]
+    // baseDir = layout.projectDirectory.dir("legacy")
+    // gradleHomePath = "/opt/gradle/8.12"
+}

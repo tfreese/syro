@@ -1,0 +1,109 @@
+build-logic/:
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.Properties;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.ValueSource;
+import org.gradle.api.provider.ValueSourceParameters;
+import org.gradle.internal.os.OperatingSystem;
+import org.gradle.process.ExecOperations;
+
+/**
+ * <a href="https://docs.gradle.org/current/userguide/service_injection.html">service_injection</a>
+ * ValueSourceParameters.None
+ *
+ * @author Thomas Freese
+ */
+@SuppressWarnings("ConstructorNotProtectedInAbstractClass")
+public abstract class MyPropertiesValueSource implements ValueSource<Properties, MyPropertiesValueSource.MyParameters> {
+    private static final Logger LOGGER = Logging.getLogger(MyPropertiesValueSource.class);
+
+    @FunctionalInterface
+    interface MyParameters extends ValueSourceParameters {
+        Property<String> getMyParam();
+    }
+
+    private final ExecOperations execOperations;
+
+    // @Inject
+    // public abstract ExecOperations getExecOperations();
+
+    /**
+     * Constructor MUST be public even in abstract Classes!
+     */
+    @Inject
+    public MyPropertiesValueSource(final ExecOperations execOperations) {
+        super();
+
+        this.execOperations = Objects.requireNonNull(execOperations, "execOperations required");
+    }
+
+    @Nullable
+    @Override
+    public Properties obtain() {
+        LOGGER.lifecycle("build properties");
+
+        // Path of the Daemon: ~/.gradle/daemon/8.11
+        // Paths.get(".").toAbsolutePath();
+
+        final Properties properties = new Properties();
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            execOperations.exec(execSpec -> {
+                // ANT: Os.isFamily(Os.FAMILY_WINDOWS))
+                // DefaultNativePlatform.getCurrentOperatingSystem().isWindows()
+                if (OperatingSystem.current().isWindows()) {
+                    execSpec.setCommandLine("cmd", "/c", "date", "/t");
+                } else {
+                    execSpec.setCommandLine("date");
+                }
+                // execSpec.setExecutable("*.bat/*.exe");
+                // execSpec.setArgs(List.of("/t"));
+
+                execSpec.setStandardOutput(baos);
+                // execSpec.setErrorOutput(System.err);
+            });
+
+            properties.setProperty("my.date", baos.toString(StandardCharsets.UTF_8).replace(System.lineSeparator(), ""));
+            properties.setProperty("my.param", getParameters().getMyParam().get());
+        }
+        catch (final IOException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+
+        return properties;
+    }
+}
+
+
+build.gradle:
+
+import de.freese.gradle.java.MyPropertiesValueSource
+
+tasks.register("myValueSource") {
+    group = "MyTasks"
+
+    Provider<Properties> myValueSourceProvider = providers.of(MyPropertiesValueSource.class) {
+        parameters {
+            myParam = project.rootDir.absolutePath
+        }
+    }
+
+    doLast {
+        def props = myValueSourceProvider.get()
+        // println("my.date:  " + props.getProperty("my.date"))
+        // println("my.param: " + props.getProperty("my.param"))
+
+        logger.lifecycle("my.date:  {}", props.getProperty("my.date"))
+        logger.lifecycle("my.param: {}", props.getProperty("my.param"))
+    }
+}
