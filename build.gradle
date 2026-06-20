@@ -121,7 +121,7 @@ jar {
     //     attributes(
     //             "Build-By": "https://github.com/tfreese",
     //             "Build-Date": java.time.LocalDateTime.now().withNano(0),
-    //             "Build-JDK": System.getProperty("java.version") + " - " + System.getProperty("java.specification.vendor"),
+    //             "Build-JDK": providers.systemProperty("java.version").getOrElse("nv") + " - " + providers.systemProperty("java.specification.vendor").getOrElse("nv"),
     //             // "Main-Class": project.main,
     //             "Build-Title": project.name,
     //             "Build-Version": project.version
@@ -142,7 +142,7 @@ tasks.withType(Jar).configureEach {
         attributes(
                 "Build-By": "https://github.com/tfreese",
                 "Build-Date": LocalDateTime.now().withNano(0).toString(),
-                "Build-JDK": System.getProperty("java.version") + " - " + System.getProperty("java.specification.vendor"),
+                "Build-JDK": providers.systemProperty("java.version").getOrElse("nv") + " - " + providers.systemProperty("java.specification.vendor").getOrElse("nv"),
                 // "Main-Class": project.main,
                 "Build-Title": project.name,
                 "Build-Version": project.version
