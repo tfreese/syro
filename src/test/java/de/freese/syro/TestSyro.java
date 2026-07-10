@@ -10,10 +10,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -73,11 +75,12 @@ class TestSyro {
         }
     };
     private static final DataHolder DATA_HOLDER_OUTPUT_INPUT_STREAM = new DataHolder() {
+        @Nullable
         private ByteArrayOutputStream outputStream;
 
         @Override
         public DataReader createReader() {
-            return new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray()));
+            return new InputStreamReader(new ByteArrayInputStream(Objects.requireNonNull(outputStream).toByteArray()));
         }
 
         @Override
@@ -116,9 +119,14 @@ class TestSyro {
         serializer.write(writer, false);
 
         final DataReader reader = dataHolder.createReader();
+
         assertNull(serializer.read(reader));
-        assertTrue(serializer.read(reader));
-        assertFalse(serializer.read(reader));
+
+        final Boolean value2 = serializer.read(reader);
+        assertTrue(value2 == null ? false : value2);
+
+        final Boolean value3 = serializer.read(reader);
+        assertFalse(value3 == null ? true : value3);
     }
 
     @ParameterizedTest(name = "{index} -> {0}")
@@ -150,7 +158,7 @@ class TestSyro {
 
         final DataReader reader = dataHolder.createReader();
         final Exception other = serializer.read(reader);
-        final StackTraceElement[] stackTraceOther = other.getStackTrace();
+        final StackTraceElement[] stackTraceOther = Objects.requireNonNull(other).getStackTrace();
 
         assertEquals(exception.getClass(), other.getClass());
         assertEquals(exception.getMessage(), other.getMessage());
@@ -216,7 +224,14 @@ class TestSyro {
     void testPoint(final String name, final DataHolder dataHolder) {
         final Serializer<Point> serializer = new Serializer<Point>() {
             @Override
+            @Nullable
             public Point read(final DataReader reader) {
+                final boolean nonNull = reader.readBoolean();
+
+                if (!nonNull) {
+                    return null;
+                }
+
                 final int x = reader.readInteger();
                 final int y = reader.readInteger();
 
@@ -224,7 +239,13 @@ class TestSyro {
             }
 
             @Override
-            public void write(final DataWriter writer, final Point value) {
+            public void write(final DataWriter writer, @Nullable final Point value) {
+                if (value == null) {
+                    writer.writeBoolean(false);
+                    return;
+                }
+
+                writer.writeBoolean(true);
                 writer.writeInteger(value.x);
                 writer.writeInteger(value.y);
             }

@@ -1,5 +1,7 @@
 package de.freese.syro.serializer;
 
+import org.jspecify.annotations.Nullable;
+
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
@@ -21,12 +23,13 @@ public final class StringSerializer implements Serializer<String> {
     }
 
     @Override
+    @Nullable
     public String read(final DataReader reader) {
         return reader.readString();
     }
 
     @Override
-    public void write(final DataWriter writer, final String value) {
+    public void write(final DataWriter writer, @Nullable final String value) {
         writer.writeString(value);
     }
 }

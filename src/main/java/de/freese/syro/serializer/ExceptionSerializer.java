@@ -3,6 +3,9 @@ package de.freese.syro.serializer;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
 
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
@@ -25,7 +28,14 @@ public final class ExceptionSerializer implements Serializer<Exception> {
     }
 
     @Override
+    @Nullable
     public Exception read(final DataReader reader) {
+        final boolean nonNull = reader.readBoolean();
+
+        if (!nonNull) {
+            return null;
+        }
+
         final String clazzName = reader.readString();
         final String message = reader.readString();
         final int stackTraceLength = reader.readInteger();
@@ -35,10 +45,10 @@ public final class ExceptionSerializer implements Serializer<Exception> {
         final Serializer<StackTraceElement> stackTraceElementSerializer = StackTraceElementSerializer.getInstance();
 
         for (int i = 0; i < stackTrace.length; i++) {
-            stackTrace[i] = stackTraceElementSerializer.read(reader);
+            stackTrace[i] = Objects.requireNonNull(stackTraceElementSerializer.read(reader));
         }
 
-        Exception exception = null;
+        Exception exception;
 
         try {
             // A look-up that can find public constructors/methods.
@@ -68,7 +78,15 @@ public final class ExceptionSerializer implements Serializer<Exception> {
     }
 
     @Override
-    public void write(final DataWriter writer, final Exception value) {
+    public void write(final DataWriter writer, @Nullable final Exception value) {
+        if (value == null) {
+            writer.writeBoolean(false);
+
+            return;
+        }
+
+        writer.writeBoolean(true);
+
         writer.writeString(value.getClass().getName());
         writer.writeString(value.getMessage());
 

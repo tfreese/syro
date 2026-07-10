@@ -1,6 +1,8 @@
 // Created: 24.09.2020
 package de.freese.syro.serializer;
 
+import org.jspecify.annotations.Nullable;
+
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
@@ -25,7 +27,14 @@ public final class StackTraceElementSerializer implements Serializer<StackTraceE
     }
 
     @Override
+    @Nullable
     public StackTraceElement read(final DataReader reader) {
+        final boolean nonNull = reader.readBoolean();
+
+        if (!nonNull) {
+            return null;
+        }
+
         final String classLoaderName = reader.readString();
         final String moduleName = reader.readString();
         final String moduleVersion = reader.readString();
@@ -38,7 +47,15 @@ public final class StackTraceElementSerializer implements Serializer<StackTraceE
     }
 
     @Override
-    public void write(final DataWriter writer, final StackTraceElement value) {
+    public void write(final DataWriter writer, @Nullable final StackTraceElement value) {
+        if (value == null) {
+            writer.writeBoolean(false);
+
+            return;
+        }
+
+        writer.writeBoolean(true);
+
         writer.writeString(value.getClassLoaderName());
         writer.writeString(value.getModuleName());
         writer.writeString(value.getModuleVersion());

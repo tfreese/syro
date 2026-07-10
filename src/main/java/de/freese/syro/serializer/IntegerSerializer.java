@@ -1,5 +1,7 @@
 package de.freese.syro.serializer;
 
+import org.jspecify.annotations.Nullable;
+
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
@@ -21,12 +23,13 @@ public final class IntegerSerializer implements Serializer<Integer> {
     }
 
     @Override
+    @Nullable
     public Integer read(final DataReader reader) {
         return reader.readIntegerOrNull();
     }
 
     @Override
-    public void write(final DataWriter writer, final Integer value) {
+    public void write(final DataWriter writer, @Nullable final Integer value) {
         writer.writeIntegerOrNull(value);
     }
 }

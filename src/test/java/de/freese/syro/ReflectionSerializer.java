@@ -1,14 +1,17 @@
 package de.freese.syro;
 
+import org.jspecify.annotations.Nullable;
+
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 import de.freese.syro.serializer.Serializer;
 
 public final class ReflectionSerializer<T> implements Serializer<T> {
     @Override
+    @Nullable
     public T read(final DataReader reader) {
         return null;
-        
+
         // // A look-up that can find public constructors/methods.
         // final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
         //
@@ -52,7 +55,7 @@ public final class ReflectionSerializer<T> implements Serializer<T> {
     }
 
     @Override
-    public void write(final DataWriter writer, final T value) {
+    public void write(final DataWriter writer, @Nullable final T value) {
         // try {
         //     final Class<?> type = value.getClass();
         //     writer.writeString(type.getName());

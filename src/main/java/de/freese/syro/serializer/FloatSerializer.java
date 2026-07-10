@@ -1,5 +1,7 @@
 package de.freese.syro.serializer;
 
+import org.jspecify.annotations.Nullable;
+
 import de.freese.syro.io.DataReader;
 import de.freese.syro.io.DataWriter;
 
@@ -21,12 +23,13 @@ public final class FloatSerializer implements Serializer<Float> {
     }
 
     @Override
+    @Nullable
     public Float read(final DataReader reader) {
         return reader.readFloatOrNull();
     }
 
     @Override
-    public void write(final DataWriter writer, final Float value) {
+    public void write(final DataWriter writer, @Nullable final Float value) {
         writer.writeFloatOrNull(value);
     }
 }

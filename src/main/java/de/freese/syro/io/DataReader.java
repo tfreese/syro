@@ -4,6 +4,8 @@ package de.freese.syro.io;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * @author Thomas Freese
  */
@@ -13,6 +15,7 @@ public interface DataReader {
     }
 
     @SuppressWarnings("java:S2447")
+    @Nullable
     default Boolean readBooleanOrNull() {
         if (readByte() == 0) {
             return null;
@@ -31,6 +34,7 @@ public interface DataReader {
         return Double.longBitsToDouble(longValue);
     }
 
+    @Nullable
     default Double readDoubleOrNull() {
         if (readByte() == 0) {
             return null;
@@ -45,6 +49,7 @@ public interface DataReader {
         return Float.intBitsToFloat(intValue);
     }
 
+    @Nullable
     default Float readFloatOrNull() {
         if (readByte() == 0) {
             return null;
@@ -62,6 +67,7 @@ public interface DataReader {
                 + (bytes[3] & 0xFF);
     }
 
+    @Nullable
     default Integer readIntegerOrNull() {
         if (readByte() == 0) {
             return null;
@@ -83,6 +89,7 @@ public interface DataReader {
                 + ((long) bytes[7] & 0xFF);
     }
 
+    @Nullable
     default Long readLongOrNull() {
         if (readByte() == 0) {
             return null;
@@ -91,17 +98,18 @@ public interface DataReader {
         return readLong();
     }
 
+    @Nullable
     default String readString() {
         return readString(StandardCharsets.UTF_8);
     }
 
+    @Nullable
     default String readString(final Charset charset) {
         final int length = readInteger();
 
         if (length == -1) {
             return null;
-        }
-        else if (length == 0) {
+        } else if (length == 0) {
             return "";
         }
 

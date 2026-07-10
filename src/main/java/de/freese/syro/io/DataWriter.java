@@ -4,6 +4,8 @@ package de.freese.syro.io;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * @author Thomas Freese
  */
@@ -12,11 +14,10 @@ public interface DataWriter {
         writeByte((byte) (value ? 1 : 0));
     }
 
-    default void writeBooleanOrNull(final Boolean value) {
+    default void writeBooleanOrNull(@Nullable final Boolean value) {
         if (value == null) {
             writeByte((byte) 0);
-        }
-        else {
+        } else {
             writeByte((byte) 1);
             writeBoolean(value);
         }
@@ -32,11 +33,10 @@ public interface DataWriter {
         writeLong(longValue);
     }
 
-    default void writeDoubleOrNull(final Double value) {
+    default void writeDoubleOrNull(@Nullable final Double value) {
         if (value == null) {
             writeByte((byte) 0);
-        }
-        else {
+        } else {
             writeByte((byte) 1);
             writeDouble(value);
         }
@@ -48,11 +48,10 @@ public interface DataWriter {
         writeInteger(intValue);
     }
 
-    default void writeFloatOrNull(final Float value) {
+    default void writeFloatOrNull(@Nullable final Float value) {
         if (value == null) {
             writeByte((byte) 0);
-        }
-        else {
+        } else {
             writeByte((byte) 1);
             writeFloat(value);
         }
@@ -69,11 +68,10 @@ public interface DataWriter {
         writeBytes(bytes);
     }
 
-    default void writeIntegerOrNull(final Integer value) {
+    default void writeIntegerOrNull(@Nullable final Integer value) {
         if (value == null) {
             writeByte((byte) 0);
-        }
-        else {
+        } else {
             writeByte((byte) 1);
             writeInteger(value);
         }
@@ -94,26 +92,24 @@ public interface DataWriter {
         writeBytes(bytes);
     }
 
-    default void writeLongOrNull(final Long value) {
+    default void writeLongOrNull(@Nullable final Long value) {
         if (value == null) {
             writeByte((byte) 0);
-        }
-        else {
+        } else {
             writeByte((byte) 1);
             writeLong(value);
         }
     }
 
-    default void writeString(final String value) {
+    default void writeString(@Nullable final String value) {
         writeString(value, StandardCharsets.UTF_8);
     }
 
-    default void writeString(final String value, final Charset charset) {
+    default void writeString(@Nullable final String value, final Charset charset) {
         if (value == null) {
             writeInteger(-1);
             return;
-        }
-        else if (value.isBlank()) {
+        } else if (value.isBlank()) {
             writeInteger(0);
             return;
         }

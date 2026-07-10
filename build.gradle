@@ -17,9 +17,10 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("ivy-publish")
-    id("io.spring.dependency-management") version("$version_springDependencyManagementPlugin")
-    id("name.remal.sonarlint") version("$version_nameRemalSonarlintGradlePlugin")
+    id("io.spring.dependency-management").version("$version_springDependencyManagementPlugin")
+    id("name.remal.sonarlint").version("$version_nameRemalSonarlintGradlePlugin")
     id("checkstyle")
+    id("net.ltgt.errorprone").version("$version_errorproneGradlePlugin").apply(true)
     // id("jacoco")
 }
 
@@ -63,7 +64,13 @@ dependencyManagement {
     }
 
     dependencies {
-        // Empty
+        dependency("com.uber.nullaway:nullaway:$version_nullaway")
+        dependency("com.google.errorprone:error_prone_core:$version_errorProneCore")
+
+        // dependencySet(group: "org.apache.xmlgraphics", version: "$version_batik") {
+        //     entry("batik-codec")
+        //     entry("batik-swing")
+        // }
     }
 }
 
@@ -83,6 +90,10 @@ dependencyManagement {
 // }
 
 dependencies {
+    api("org.jspecify:jspecify")
+    errorprone("com.uber.nullaway:nullaway")
+    errorprone("com.google.errorprone:error_prone_core")
+
     // implementation(platform("org.springframework.boot:spring-boot-dependencies:$version_springBoot"))
     api("io.netty:netty-buffer")
     // compileOnly("io.netty:netty-buffer")
@@ -321,7 +332,57 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
     options.debug = true
     options.compilerArgs.addAll(compilerArgs)
+
+    options.errorprone {
+        // check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
+        // check("NullAway", CheckSeverity.WARN)
+        warn("NullAway")
+        // error("NullAway")
+
+        // Scan all Packages.
+        option("NullAway:AnnotatedPackages", "de.freese.syro")
+
+        // Scan only Packages with package.info.java.
+        // option("NullAway:OnlyNullMarked", "true")
+
+        // Uncomment below if you are using Java 22+ compiled and you want to check generics nullness.
+        option("NullAway:JSpecifyMode", "true")
+
+        // Or with SuppressWarnings.
+        disable("MissingSummary")
+
+        // disableAllChecks = true // Other error prone checks are disabled.
+        // option("NullAway:CustomContractAnnotations", "org.springframework.lang.Contract")
+
+        // allErrorsAsWarnings.set(true)
+        // disableWarningsInGeneratedCode.set(false)
+    }
+
+    // options.errorprone.allErrorsAsWarnings.set(true)
+    // options.errorprone.disableWarningsInGeneratedCode.set(false)
+
+    // Disable NullAway on test code.
+    // if (name.toLowerCase().contains("test")) {
+    //     options.errorprone {
+    //         disable("NullAway")
+    //     }
+    // }
 }
+
+// tasks.named("compileTestJava") {
+//     options.errorprone {
+//         // Disable All.
+//         enabled = false
+//
+//         // Disable Test-Classes.
+//         option("NullAway:ExcludedClassAnnotations", "org.junit.jupiter.api.Test,org.junit.Test")
+//
+//         // Disable Test-Packages.
+//         option("NullAway:UnannotatedSubPackages", "de.freese.jspecify,de.freese.jspecify.test")
+//
+//         disable("NullAway")
+//     }
+// }
 
 tasks.register("listRepos") {
     group = "MyTasks"
@@ -421,20 +482,37 @@ tasks.named("assemble") {
 // https://docs.gradle.org/current/userguide/publishing_maven.html
 // build.finalizedBy("publishToMavenLocal")
 
+// Workaround: maven-publish 'versionMapping' registers an internal withXml action as a Groovy closure.
+// Gradle 9.x configuration cache serializes this closure, but the Groovy build-script 'this' reference
+// cannot be deserialized -> "Cannot read field 'delegate' because 'this' is null".
+// Fix: mark POM generation tasks as incompatible with configuration cache so they always re-execute.
+// tasks.withType(GenerateMavenPom).configureEach {
+//     notCompatibleWithConfigurationCache("maven-publish: internal withXml Groovy closure is not configuration-cache compatible")
+// }
+
+String publishGroup = project.group
+String publishArtifact = project.name
+String publishVersion = project.version
+String publishDescription = project.description
+
 publishing {
     publications {
-        syroMvn(MavenPublication) {
-            // afterEvaluate {
-            //     // groupId = "..."
-            //     // artifactId = "..."
-            //     // version = "..."
-            // }
-
+        create("syroMvn", MavenPublication) {
             versionMapping {
+                // id("java-library")
+                // - api = <scope>compile</scope>
+                // - runtimeOnly = <scope>runtime</scope>
+                //
+                // id("java")
+                // - implementation = <scope>runtime</scope>
+                // - runtimeOnly = <scope>runtime</scope>
+
                 usage(Usage.JAVA_API) {
-                    fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)
+                    // Nimm die Abhängigkeitsauflösung aus genau dieser Konfiguration.
+                    fromResolutionOf(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)
                 }
                 usage(Usage.JAVA_RUNTIME) {
+                    // Nimm das bereits berechnete Resolution-Result der aktuellen Usage/Variante.
                     fromResolutionResult()
                 }
             }
@@ -460,28 +538,12 @@ publishing {
             //     extension("exe")
             // }
 
-            // java-library:
-            // - api = <scope>compile</scope>
-            // - runtimeOnly = <scope>runtime</scope>
-            //
-            // java:
-            // - implementation = <scope>runtime</scope>
-            // - runtimeOnly = <scope>runtime</scope>
-
-            pom.withXml {
-                def root = asNode()
-                root.appendNode("packaging", "jar")
-                // root.dependencies.removeAll { dep ->
-                //     dep.scope == "test"
-                // }
-            }
-
             pom {
                 // Is not generated in the POM.
                 // packaging = "jar"
 
-                name = project.name
-                description = project.description
+                name = publishArtifact
+                description = publishDescription
                 // url = "http://www.example.com/library"
                 //
                 // properties = [
@@ -511,34 +573,35 @@ publishing {
                 //     url = "http://example.com/my-library/"
                 // }
             }
-        }
 
-        syroIvy(IvyPublication) {
-            organisation = project.group
-            module = project.name
-            revision = project.version //+ "_" + new Date().format("yyyyMMdd_HHmmss")
+            pom.withXml {
+                def root = asNode()
+                // root.dependencies.removeAll { dep ->
+                //     dep.scope == "test"
+                // }
 
-            from(components.java) // With Dependencies.
+                if (!root.packaging || root.packaging.isEmpty()) {
+                    // Doesn't work.
+                    // def children = root.children()
+                    // def idx = children.findIndexOf { it instanceof Node && it.name() == "description" }
+                    // def packagingNode = new Node(null, "packaging", "jar")
+                    //
+                    // if (idx >= 0) {
+                    //     children.add(idx + 1, packagingNode) // After description-Node.
+                    // } else {
+                    //     children.add(packagingNode)
+                    // }
+                    def desc = root.description ? root.description[0] : null
 
-            // Only JAR, no Dependencies in ivy.xml
-            // artifact(tasks.named("jar")) {
-            //     // type = "ear"
-            // }
-
-            // Transfer the Dependency-Versions to the Ivy-Descriptor.
-            versionMapping {
-                usage("java-api") { fromResolutionResult() }
-                usage("java-runtime") { fromResolutionResult() }
+                    if (desc != null) {
+                        desc + {
+                            packaging("jar")
+                        }
+                    } else {
+                        root.appendNode("packaging", "jar")
+                    }
+                }
             }
-
-            // descriptor {
-            //     withXml {
-            //         // Without Descriptor, delete Dependencies-Node.
-            //         asNode().getAt("dependencies").forEach { node ->
-            //             (node as groovy.util.Node).setValue("")
-            //         }
-            //     }
-            // }
         }
 
         // custom(MavenPublication) {
@@ -552,6 +615,40 @@ publishing {
         //         artifact(yetAnotherDistribution)
         //     }
         // }
+
+        create("syroIvy", IvyPublication) {
+            organisation = publishGroup
+            module = publishArtifact
+            revision = publishVersion //+ "_" + new Date().format("yyyyMMdd_HHmmss")
+
+            from(components.java) // With Dependencies.
+
+            // Only JAR, no Dependencies in ivy.xml
+            // artifact(tasks.named("jar")) {
+            //     // type = "ear"
+            // }
+
+            // Transfer the Dependency-Versions to the Ivy-Descriptor.
+            versionMapping {
+                usage(Usage.JAVA_API) {
+                    // Nimm die Abhängigkeitsauflösung aus genau dieser Konfiguration.
+                    fromResolutionOf(JavaPlugin.COMPILE_CLASSPATH_CONFIGURATION_NAME)
+                }
+                usage(Usage.JAVA_RUNTIME) {
+                    // Nimm das bereits berechnete Resolution-Result der aktuellen Usage/Variante.
+                    fromResolutionResult()
+                }
+            }
+
+            // descriptor {
+            //     withXml {
+            //         // Without Descriptor, delete Dependencies-Node.
+            //         asNode().getAt("dependencies").forEach { node ->
+            //             (node as groovy.util.Node).setValue("")
+            //         }
+            //     }
+            // }
+        }
     }
 
     repositories {
@@ -563,7 +660,7 @@ publishing {
             def snapshotsRepoUrl = layout.buildDirectory.dir("mvn-repo/snapshots")
 
             // url = project.hasProperty("release") ? releasesRepoUrl : snapshotsRepoUrl
-            url = version.endsWith("RELEASE") ? releasesRepoUrl : snapshotsRepoUrl
+            url = uri(version.endsWith("RELEASE") ? releasesRepoUrl : snapshotsRepoUrl)
 
             allowInsecureProtocol = true
 
