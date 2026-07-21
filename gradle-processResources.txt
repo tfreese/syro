@@ -5,13 +5,13 @@ processResources {
             "project_version"    : project.version
     ]
 
-    // filesMatching("**/*.properties")
+    // filesNotMatching(...)
+    // filesMatching(["**/*.properties", "application-*.yml"])
     filesMatching(["application.properties", "application.yml"]) {
         // filteringCharset = "UTF-8"
 
         // In case of Problems the Placeholder must be escaped: \${...}.
         // Exception for missing Properties.
-        // expand(project.properties)
         // expand(map)
 
         // @...@: No exception for missing Properties.
@@ -19,11 +19,20 @@ processResources {
                 project_artifactId : map["project_artifactId"],
                 project_description: map["project_description"],
                 project_version    : map["project_version"]
-        ])
+        ],
+                // Defaults:
+                beginToken: "@",
+                endToken  : "@"
+        ))
 
         // filter { it.replaceAll("@project_artifactId@", map["project_artifactId"]) }
         // filter { it.replaceAll("@project_description@", map["project_description"]) }
         // filter { it.replaceAll("@project_version@", map["project_version"]) }
+        // filter { String line ->
+        //     line.replace("@project_description@", map["project_description"])
+        //             .replace("@project_artifactId@", map["project_artifactId"])
+        //             .replace("@project_version@", map["project_version"])
+        // }
 
         // Keeps Windows Line-Endings.
         // filter(org.apache.tools.ant.filters.FixCrLfFilter.class, eol: org.apache.tools.ant.filters.FixCrLfFilter.CrLf.newInstance("crlf"))
