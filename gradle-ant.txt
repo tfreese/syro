@@ -307,6 +307,7 @@ build.gradle:
 
 import de.gradle.java.AntExec
 
+Groovy:
 tasks.register("createAntExec", AntExec) {
     group = "myTasks"
     description = "Führt ANT aus"
@@ -323,3 +324,22 @@ tasks.register("createAntExec", AntExec) {
     // baseDir = layout.projectDirectory.dir("legacy")
     // gradleHomePath = "/opt/gradle/8.12"
 }
+
+Kotlin:
+tasks.register<AntExec>("createAntExec") {
+    group = "myTasks"
+    description = "Erstellt hilfe.jar"
+
+    // Use Build-Cache, default active for Jar-Tasks.
+    inputs.dir(projectDir.dir("src").dir("main").dir("resources"))
+    outputs.dir(projectDir.dir("dist"))
+
+    antBuildFile.set(projectDir.file("ant-help.xml"))
+    antTarget.set("createHelp")
+    gradleHomePath.set(gradleHome.normalize().absolutePath)
+
+    // antProperties.set(mapOf("build.env" to "production", "verbose" to "true"))
+    // baseDir.set(projectDir.dir("legacy"))
+    // gradleHomePath.set("/opt/gradle/9.5.1")
+}
+tasks.named("build") { finalizedBy("createAntExec") }

@@ -1,3 +1,4 @@
+Groovy:
 processResources {
     def map = [
             "project_artifactId" : project.name,
@@ -36,5 +37,22 @@ processResources {
 
         // Keeps Windows Line-Endings.
         // filter(org.apache.tools.ant.filters.FixCrLfFilter.class, eol: org.apache.tools.ant.filters.FixCrLfFilter.CrLf.newInstance("crlf"))
+    }
+}
+
+Kotlin:
+tasks.named<ProcessResources>("processResources") {
+    val map = mapOf(
+        "project_description" to (description ?: ""),
+        "project_artifactId" to name,
+        "project_version" to version.toString()
+    )
+
+    filesMatching("application.yml") {
+        // expand(map)
+        filter(
+            mapOf("tokens" to map),
+            org.apache.tools.ant.filters.ReplaceTokens::class.java
+        )
     }
 }

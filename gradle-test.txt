@@ -1,0 +1,75 @@
+Groovy:
+// test {
+tasks.withType(Test).configureEach {
+    enabled = providers.gradleProperty("disableTests")
+            .map(Boolean::parseBoolean)
+            .orElse(true)
+            .get()
+    ignoreFailures = false
+    useJUnitPlatform()
+
+    // No parallel Tests: gradle --no-parallel --max-workers 1 test
+    // or 'maxParallelForks = 1'
+
+    jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+
+    systemProperty("java.awt.headless", "true")
+
+    filter {
+        // Deactivate Class
+        // excludeTestsMatching("PACKAGE.CLASS")
+
+        // Deactivate Method
+        // excludeTestsMatching("PACKAGE.CLASS.METHOD")
+
+        // Deactivate Package with Wildcards
+        // excludeTestsMatching("*.integration.*")
+
+        // Deactivate Method with Wildcards
+        // excludeTestsMatching("*stress*")
+    }
+
+    reports {
+        junitXml.required = true
+        html.required = false
+    }
+
+    testLogging {
+        showStandardStreams = false
+        // events = ["PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR"]
+        events = ["FAILED", "SKIPPED"]
+        // showExceptions = true
+        // showCauses = true
+        // showStackTraces = true
+        // exceptionFormat = TestExceptionFormat.FULL
+    }
+
+    addTestListener(new TestListener() {
+        void afterSuite(TestDescriptor suite, TestResult result) {
+            // No Parent = all Tests finished.
+            if (suite.parent != null) {
+                return
+            }
+
+            String output = "Results: ${result.resultType} - ${result.testCount} Tests - ${result.successfulTestCount} SUCCESSFUL, ${result.failedTestCount} FAILED, ${result.skippedTestCount} SKIPPED"
+
+            String lines = "-".repeat(output.length())
+            // String lines = Stream.generate(() -> "-").limit(output.length()).collect(Collectors.joining());
+
+            println(lines)
+            println(output)
+            println(lines)
+        }
+    })
+
+    // finalizedBy("jacocoTestReport")
+}
+
+Kotlin:
+// tasks.named<Test>("test")
+tasks.withType<Test>().configureEach {
+    isEnabled = providers.gradleProperty("enableTests")
+        .map { it.toBoolean() }
+        .orElse(false)
+        .get()
+}

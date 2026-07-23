@@ -178,7 +178,10 @@ tasks.withType(AbstractArchiveTask).configureEach {
 // test {
 // tasks.named<Test>("test")
 tasks.withType(Test).configureEach {
-    enabled = true
+    enabled = providers.gradleProperty("disableTests")
+            .map(Boolean::parseBoolean)
+            .orElse(true)
+            .get()
     ignoreFailures = false
     useJUnitPlatform()
 
