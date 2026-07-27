@@ -1,3 +1,26 @@
+// Start: gradle run
+// application {
+//     mainClass = project.main
+//
+//     applicationDefaultJvmArgs = ["-Xms1024m", "-Xmx2048m"]
+// }
+// run {
+//     jvmArgs = ["--enable-native-access=ALL-UNNAMED"]
+// }
+
+// distTar {
+//     enabled = false
+// }
+
+// Done by Convention-Plugin.
+// jar {
+//     manifest {
+//         attributes(
+//                 "Main-Class": project.main
+//         )
+//     }
+// }
+
 // gradle exec --args=["-Dspring.profiles.active=file"]
 // gradle exec -Dspring.profiles.active=file
 tasks.register("exec", JavaExec) {

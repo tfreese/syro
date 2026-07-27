@@ -1,6 +1,7 @@
 //apply from: "../dependencies.gradle"
 //apply from: "../dependencies.properties"
 
+Groovy:
 Properties properties = new Properties()
 
 try (InputStream input = new FileInputStream(file("../gradle.properties"))) {
@@ -9,4 +10,15 @@ try (InputStream input = new FileInputStream(file("../gradle.properties"))) {
 
 for (String key : properties.stringPropertyNames()) {
     ext.set(key, properties.getProperty(key))
+}
+
+Kotlin:
+file("../gradle.properties").inputStream().use { input ->
+    val properties = Properties().apply {
+        load(input)
+    }
+
+    for (key in properties.stringPropertyNames()) {
+        extra[key] = properties.getProperty(key)
+    }
 }

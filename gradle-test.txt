@@ -72,4 +72,14 @@ tasks.withType<Test>().configureEach {
         .map { it.toBoolean() }
         .orElse(false)
         .get()
+
+    ignoreFailures = false
+
+    useJUnitPlatform()
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.isDebug = true
+    options.compilerArgs.addAll(compilerArgs)
 }

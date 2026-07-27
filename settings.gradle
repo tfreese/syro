@@ -10,8 +10,25 @@ pluginManagement {
     // System.setProperty("javax.net.ssl.trustStorePassword", "")
 }
 
+// Global credentials for Maven-Repositories.
+// Doesn't work with mavenLocal().
+// withType(MavenArtifactRepository).configureEach { repo ->
+//     repo.credentials {
+//         username = artifactoryUser.getOrNull()
+//         password = artifactoryPassword.getOrNull()
+//     }
+// }
+
+// Global credentials for Ivy-Repositories.
+// withType(IvyArtifactRepository).configureEach { repo ->
+//     repo.credentials {
+//         username = artifactoryUser.getOrNull()
+//         password = artifactoryPassword.getOrNull()
+//     }
+// }
+
 // Without rootProject.name the Name of the Projekt-Directory is used.
-// rootProject.name = "syro"
+rootProject.name = "syro"
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
