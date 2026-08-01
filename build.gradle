@@ -796,15 +796,6 @@ sonarLint {
     // ignoredPaths.add("**/demo/FailsafeDemo.java")
 }
 
-
-// For Composite Build.
-tasks.register("cleanAll", GradleBuild) {
-    tasks = ["clean"]
-}
-tasks.register("buildAll", GradleBuild) {
-    tasks = ["build"]
-}
-
 // ext {
 //     main = "de.freese.CLASS"
 // }

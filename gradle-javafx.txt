@@ -3,6 +3,15 @@ plugins {
 }
 
 Groovy:
+// For JavaFx native-Library Downloads.
+configurations.matching { it.canBeResolved }.configureEach {
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        attribute(OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE, objects.named(OperatingSystemFamily, OperatingSystemFamily.LINUX))
+        attribute(MachineArchitecture.ARCHITECTURE_ATTRIBUTE, objects.named(MachineArchitecture, MachineArchitecture.X86_64))
+    }
+}
+
 javafx {
     version = "$version_javafx"
     modules = ["javafx.controls", "javafx.swing"]
@@ -12,8 +21,23 @@ javafx {
 }
 
 Kotlin:
+// For JavaFx native-Library Downloads.
+configurations.matching { it.isCanBeResolved }.configureEach {
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>(Usage.JAVA_RUNTIME))
+        attribute(
+            OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE,
+            objects.named<OperatingSystemFamily>(OperatingSystemFamily.LINUX)
+        )
+        attribute(
+            MachineArchitecture.ARCHITECTURE_ATTRIBUTE,
+            objects.named<MachineArchitecture>(MachineArchitecture.X86_64)
+        )
+    }
+}
+
 javafx {
-    version = project.property("version_javafx").toString()
+    version = property("version_javafx").toString()
     modules = listOf("javafx.controls", "javafx.swing")
     configuration = "implementation"
     setPlatform("windows") // linux, mac
