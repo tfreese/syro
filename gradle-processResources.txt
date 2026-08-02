@@ -48,7 +48,7 @@ tasks.named<ProcessResources>("processResources") {
         "project_version" to version.toString()
     )
 
-    filesMatching("application.yml") {
+    filesMatching(listOf("application.properties", "application.yml")) {
         // expand(map)
         filter(
             mapOf("tokens" to map),
