@@ -1,3 +1,4 @@
+Groovy:
 // Start: gradle run
 // application {
 //     mainClass = project.main
@@ -66,4 +67,27 @@ tasks.register("reuseExecTask", JavaExec) {
 
     // Exception if Property not found.
     //args = ["-user", "USER", "-password", getProperty("user_psw")]
+}
+
+Kotlin:
+tasks.register<JavaExec>("reuseJavaExec") {
+    val otherTask = tasks.named<JavaExec>("runVersionUpdates").get()
+
+    group = otherTask.group
+    description = otherTask.description + " with other Parameters"
+
+    classpath = otherTask.classpath
+    mainClass.set(otherTask.mainClass.get())
+    // executable(otherTask.executable as String)
+
+    jvmArgs(otherTask.jvmArgs)
+
+    // Best Practice.
+    args("-user", "USER", "-password", providers.gradleProperty("user_psw").orElse("null").get())
+
+    // No Exception if Property not found but with default, Bamboo friendly.
+    // args("-user", "USER", "-password", findProperty("user_psw") ?: "null")
+
+    // Exception if Property not found.
+    // args("-user", "USER", "-password", getProperty("user_psw"))
 }

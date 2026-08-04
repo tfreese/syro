@@ -1,4 +1,21 @@
 Groovy:
+plugins.apply("io.spring.dependency-management")
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:" + property("version_springBoot"))
+    }
+
+    dependencies {
+        dependency("com.github.kwhat:jnativehook:" + property("version_jnativehook"))
+
+        dependencySet(group: "org.apache.xmlgraphics", version: "" + property("version_batik")) {
+            entry("batik-codec")
+            entry("batik-swing")
+            entry("batik-transcoder")
+        }
+    }
+}
+
 // Start: gradle bootRun --args="--spring.profiles.active=file"
 // The archive name. If the name has not been explicitly set, the pattern for the name is:
 // [archiveBaseName]-[archiveAppendix]-[archiveVersion]-[archiveClassifier].[archiveExtension]
@@ -16,6 +33,29 @@ bootRun {
 }
 
 Kotlin:
+plugins.apply("io.spring.dependency-management")
+
+subprojects {
+    val dependencyManagement =
+        extensions.getByType<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>()
+
+    extensions.configure(io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension::class.java) {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:" + property("version_springBoot"))
+        }
+
+        dependencies {
+            dependency("tools.jackson.dataformat:jackson-dataformat-csv:" + dependencyManagement.importedProperties["jackson-bom.version"])
+
+            dependencySet("org.apache.xmlgraphics:" + property("version_batik")) {
+                entry("batik-codec")
+                entry("batik-swing")
+                entry("batik-transcoder")
+            }
+        }
+    }
+}
+
 springBoot {
     mainClass.set(mainClazz)
 }

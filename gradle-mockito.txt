@@ -1,0 +1,41 @@
+Groovy:
+pluginManager.withPlugin("java") {
+    configurations {
+        mockitoAgent
+    }
+
+    mockitoAgent("org.mockito:mockito-core") {
+        transitive = false
+    }
+}
+
+tasks.withType(Test).configureEach {
+    String mockitoFiles = configurations.mockitoAgent.asPath
+
+    doFirst {
+        jvmArgs += "-javaagent:" + mockitoFiles
+    }
+}
+
+Kotlin:
+plugins.withType<JavaPlugin> {
+    val mockitoAgent = configurations.create("mockitoAgent")
+
+    mockitoAgent("org.mockito:mockito-core") {
+        isTransitive = false
+    }
+
+    // ODER
+    add("mockitoAgent", "org.mockito:mockito-core") {
+        isTransitive = false
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    // val mockitoFiles = configurations.named("mockitoAgent").get().asPath
+    val mockitoFiles = mockitoAgent.asPath
+
+    doFirst {
+        jvmArgs.add("-javaagent:$mockitoFiles")
+    }
+}
