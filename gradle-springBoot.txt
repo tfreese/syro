@@ -54,6 +54,13 @@ subprojects {
             }
         }
     }
+
+    plugins.withType<JavaPlugin> {
+        dependencies {
+            add("testImplementation", "org.junit.jupiter:junit-jupiter")
+            add("testRuntimeOnly", "org.junit.platform:junit-platform-launcher")
+        }
+    }
 }
 
 springBoot {

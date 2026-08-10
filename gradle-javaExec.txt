@@ -81,6 +81,7 @@ tasks.register<JavaExec>("reuseJavaExec") {
     // executable(otherTask.executable as String)
 
     jvmArgs(otherTask.jvmArgs)
+    //jvmArgs("--add-modules", "jdk.incubator.vector", "--enable-preview")
 
     // Best Practice.
     args("-user", "USER", "-password", providers.gradleProperty("user_psw").orElse("null").get())
