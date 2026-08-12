@@ -43,9 +43,9 @@ processResources {
 Kotlin:
 tasks.named<ProcessResources>("processResources") {
     val map = mapOf(
-        "project_description" to (description ?: ""),
-        "project_artifactId" to name,
-        "project_version" to version.toString()
+        "project_description" to (project.description ?: ""),
+        "project_artifactId" to project.name,
+        "project_version" to project.version.toString()
     )
 
     filesMatching(listOf("application.properties", "application.yml")) {
