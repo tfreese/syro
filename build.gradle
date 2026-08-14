@@ -112,11 +112,11 @@ dependencies {
 }
 
 java {
-    // sourceCompatibility = JavaVersion.VERSION_24
-    // targetCompatibility = JavaVersion.VERSION_24
+    // sourceCompatibility = JavaVersion.VERSION_26
+    // targetCompatibility = JavaVersion.VERSION_26
 
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(26)
         // vendor = JvmVendorSpec.ORACLE
         // implementation = JvmImplementation.J9
     }
