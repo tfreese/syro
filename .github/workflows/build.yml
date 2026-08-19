@@ -79,7 +79,7 @@ jobs:
                 id: compile
                 uses: ./.github/actions/compile
                 with:
-                    java-version: "25"
+                    java-version: "latest"
                     gradle-executable: ${{ matrix.gradle }}
             #                    gradle-executable: "./gradlew"
 

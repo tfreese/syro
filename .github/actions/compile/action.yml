@@ -4,7 +4,7 @@ inputs:
     java-version:
         description: "Java version to compile and test with"
         required: true
-        default: "25"
+        default: "latest"
     gradle-executable:
         description: "The Gradle executable"
         required: true
@@ -14,8 +14,8 @@ runs:
         -   name: Setup Java
             uses: actions/setup-java@v5
             with:
+                distribution: "oracle-openjdk"
                 java-version: ${{ inputs.java-version }}
-                distribution: "oracle"
                 architecture: x64
                 cache: "gradle" # Preserve ~/.gradle Cache over Jobs.
 
