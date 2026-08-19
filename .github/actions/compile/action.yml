@@ -14,7 +14,7 @@ runs:
         -   name: Setup Java
             uses: actions/setup-java@v5
             with:
-                distribution: "oracle-openjdk"
+                distribution: "temurin"
                 java-version: ${{ inputs.java-version }}
                 architecture: x64
                 cache: "gradle" # Preserve ~/.gradle Cache over Jobs.
