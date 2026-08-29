@@ -1,4 +1,3 @@
-// Created: 22.09.2020
 package de.freese.syro.io;
 
 import java.nio.charset.Charset;
@@ -8,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * @author Thomas Freese
+ * @since 22.09.2020
  */
 public interface DataReader {
     default boolean readBoolean() {
@@ -109,7 +109,8 @@ public interface DataReader {
 
         if (length == -1) {
             return null;
-        } else if (length == 0) {
+        }
+        else if (length == 0) {
             return "";
         }
 

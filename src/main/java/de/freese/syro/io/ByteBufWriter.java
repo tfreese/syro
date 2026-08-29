@@ -1,4 +1,3 @@
-// Created: 04.10.2020
 package de.freese.syro.io;
 
 import java.util.Objects;
@@ -7,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 
 /**
  * @author Thomas Freese
+ * @since 04.10.2020
  */
 public class ByteBufWriter implements DataWriter {
     private final ByteBuf byteBuf;

@@ -1,4 +1,3 @@
-// Created: 22.09.2020
 package de.freese.syro.io;
 
 import java.nio.ByteBuffer;
@@ -6,6 +5,7 @@ import java.util.Objects;
 
 /**
  * @author Thomas Freese
+ * @since 22.09.2020
  */
 public class ByteBufferWriter implements DataWriter {
     private final ByteBuffer byteBuffer;

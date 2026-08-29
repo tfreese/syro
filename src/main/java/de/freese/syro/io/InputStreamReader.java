@@ -1,4 +1,3 @@
-// Created: 30.09.22
 package de.freese.syro.io;
 
 import java.io.IOException;
@@ -8,6 +7,7 @@ import java.util.Objects;
 
 /**
  * @author Thomas Freese
+ * @since 30.09.2022
  */
 public class InputStreamReader implements DataReader {
     private final InputStream inputStream;
@@ -23,7 +23,7 @@ public class InputStreamReader implements DataReader {
         try {
             return (byte) inputStream.read();
         }
-        catch (IOException ex) {
+        catch (final IOException ex) {
             throw new UncheckedIOException(ex);
         }
     }
@@ -33,7 +33,7 @@ public class InputStreamReader implements DataReader {
         try {
             return inputStream.readNBytes(length);
         }
-        catch (IOException ex) {
+        catch (final IOException ex) {
             throw new UncheckedIOException(ex);
         }
     }

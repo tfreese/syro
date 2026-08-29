@@ -1,4 +1,3 @@
-// Created: 22.09.2020
 package de.freese.syro.io;
 
 import java.nio.charset.Charset;
@@ -8,6 +7,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * @author Thomas Freese
+ * @since 22.09.2020
  */
 public interface DataWriter {
     default void writeBoolean(final boolean value) {
@@ -17,7 +17,8 @@ public interface DataWriter {
     default void writeBooleanOrNull(@Nullable final Boolean value) {
         if (value == null) {
             writeByte((byte) 0);
-        } else {
+        }
+        else {
             writeByte((byte) 1);
             writeBoolean(value);
         }
@@ -36,7 +37,8 @@ public interface DataWriter {
     default void writeDoubleOrNull(@Nullable final Double value) {
         if (value == null) {
             writeByte((byte) 0);
-        } else {
+        }
+        else {
             writeByte((byte) 1);
             writeDouble(value);
         }
@@ -51,7 +53,8 @@ public interface DataWriter {
     default void writeFloatOrNull(@Nullable final Float value) {
         if (value == null) {
             writeByte((byte) 0);
-        } else {
+        }
+        else {
             writeByte((byte) 1);
             writeFloat(value);
         }
@@ -71,7 +74,8 @@ public interface DataWriter {
     default void writeIntegerOrNull(@Nullable final Integer value) {
         if (value == null) {
             writeByte((byte) 0);
-        } else {
+        }
+        else {
             writeByte((byte) 1);
             writeInteger(value);
         }
@@ -95,7 +99,8 @@ public interface DataWriter {
     default void writeLongOrNull(@Nullable final Long value) {
         if (value == null) {
             writeByte((byte) 0);
-        } else {
+        }
+        else {
             writeByte((byte) 1);
             writeLong(value);
         }
@@ -109,7 +114,8 @@ public interface DataWriter {
         if (value == null) {
             writeInteger(-1);
             return;
-        } else if (value.isBlank()) {
+        }
+        else if (value.isBlank()) {
             writeInteger(0);
             return;
         }
