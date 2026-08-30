@@ -4,23 +4,21 @@ pluginManager.withPlugin("java") {
         mockitoAgent
     }
 
+    testImplementation("org.mockito:mockito-junit-jupiter")
     mockitoAgent("org.mockito:mockito-core") {
         transitive = false
     }
 }
 
 tasks.withType(Test).configureEach {
-    String mockitoFiles = configurations.mockitoAgent.asPath
-
-    doFirst {
-        jvmArgs += "-javaagent:" + mockitoFiles
-    }
+    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
 }
 
 Kotlin:
 plugins.withType<JavaPlugin> {
     val mockitoAgent = configurations.create("mockitoAgent")
 
+    add("testImplementation", "org.mockito:mockito-junit-jupiter")
     mockitoAgent("org.mockito:mockito-core") {
         isTransitive = false
     }
@@ -31,11 +29,11 @@ plugins.withType<JavaPlugin> {
     }
 }
 
-tasks.withType<Test>().configureEach {
-    // val mockitoFiles = configurations.named("mockitoAgent").get().asPath
-    val mockitoFiles = mockitoAgent.asPath
+val agentPath = mockitoAgent.asPath
+//val agentPath: String = configurations.getByName("mockitoAgent").asPath
+//val agentPath: String = configurations.named("mockitoAgent").get().asPath
 
-    doFirst {
-        jvmArgs.add("-javaagent:${mockitoFiles}")
-    }
+tasks.withType<Test>().configureEach {
+    jvmArgs.add("-javaagent:${mockitoAgent.asPath}")
+    //jvmArgs.add("-javaagent:${agentPath}")
 }
