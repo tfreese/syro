@@ -1,7 +1,13 @@
 Groovy:
 pluginManager.withPlugin("java") {
     configurations {
-        mockitoAgent
+        mockitoAgent {
+            // Kann als Dependency-Graph aufgelöst werden (Default).
+            isCanBeResolved = true
+
+            // Wird nicht als veröffentlichbares/verbrauchbares Artefakt nach außen exponiert (Default).
+            isCanBeConsumed = false
+        }
     }
 
     testImplementation("org.mockito:mockito-junit-jupiter")
@@ -16,7 +22,13 @@ tasks.withType(Test).configureEach {
 
 Kotlin:
 plugins.withType<JavaPlugin> {
-    val mockitoAgent = configurations.create("mockitoAgent")
+    val mockitoAgent = configurations.create("mockitoAgent") {
+        // Kann als Dependency-Graph aufgelöst werden (Default).
+        isCanBeResolved = true
+
+        // Wird nicht als veröffentlichbares/verbrauchbares Artefakt nach außen exponiert (Default).
+        isCanBeConsumed = false
+    }
 
     add("testImplementation", "org.mockito:mockito-junit-jupiter")
     mockitoAgent("org.mockito:mockito-core") {

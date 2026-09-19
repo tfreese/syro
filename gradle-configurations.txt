@@ -8,8 +8,30 @@ configurations.configureEach { config ->
     exclude(group: "org.springframework.boot", module: "spring-boot-starter-logging")
 }
 
+configurations {
+    // implementation {
+    //     exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    // }
+    // runtimeOnly {
+    //     exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    // }
+    // testImplementation {
+    //     exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    // }
+}
+
 
 Kotlin:
+configurations.create("jaxb") {
+    //extendsFrom(configurations.implementation.get())
+
+    // Kann als Dependency-Graph aufgelöst werden (Default).
+    isCanBeResolved = true
+
+    // Wird nicht als veröffentlichbares/verbrauchbares Artefakt nach außen exponiert (Default).
+    isCanBeConsumed = false
+}
+
 // configurations.named(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME) {
 // configurations.testImplementation {
 
