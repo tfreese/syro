@@ -21,7 +21,9 @@ public class InputStreamReader implements DataReader {
     @Override
     public byte readByte() {
         try {
-            return (byte) inputStream.read();
+            final int bytesRead = inputStream.read();
+
+            return (byte) bytesRead;
         }
         catch (final IOException ex) {
             throw new UncheckedIOException(ex);
