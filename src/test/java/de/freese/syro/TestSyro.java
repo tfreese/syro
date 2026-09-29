@@ -40,7 +40,7 @@ import de.freese.syro.serializer.StringSerializer;
 @SuppressWarnings("ALL")
 class TestSyro {
 
-    private static final int BUFFER_SIZE = 1024 * 18;
+    private static final int BUFFER_SIZE = 1024 * 24;
 
     private static final DataHolder DATA_HOLDER_BYTE_BUF = new DataHolder() {
         private final ByteBuf buffer = UnpooledByteBufAllocator.DEFAULT.buffer(BUFFER_SIZE);

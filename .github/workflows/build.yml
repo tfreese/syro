@@ -62,7 +62,7 @@ jobs:
 
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
                 with:
                     lfs: true
 
@@ -81,7 +81,7 @@ jobs:
                 with:
                     java-version: "26"
                     gradle-executable: ${{ matrix.gradle }}
-            #                    gradle-executable: "./gradlew"
+                    # gradle-executable: "./gradlew"
 
             -   name: Assembly
                 id: assembly
