@@ -20,6 +20,14 @@ run-name: ${{ github.actor }} is testing out GitHub Actions
 on:
     # Manual Trigger
     workflow_dispatch:
+        inputs:
+            environment:
+                description: 'Target-Environment:'
+                required: true
+                default: 'test'
+                type: choice
+                options:
+                    - test
     # Push Trigger
     push:
         branches: [ "master" ]
@@ -46,6 +54,8 @@ jobs:
     build:
         name: Build the Project
         needs: print-infos
+        # Wenn inputs.environment existiert, nimm es. Ansonsten nutze 'test' als Default.
+        environment: ${{ inputs.environment || 'test' }}
         strategy:
             fail-fast: false
             matrix:
@@ -79,7 +89,7 @@ jobs:
                 id: compile
                 uses: ./.github/actions/compile
                 with:
-                    java-version: "26"
+                    java-version: "${{ vars.JDK_VERSION }}"
                     gradle-executable: ${{ matrix.gradle }}
                     # gradle-executable: "./gradlew"
 
