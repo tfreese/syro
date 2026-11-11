@@ -56,3 +56,13 @@ tasks.named<ProcessResources>("processResources") {
         )
     }
 }
+
+tasks.register<Copy>("processTemplates") {
+    from("src/templates")
+    into(layout.buildDirectory.dir("templates"))
+
+    val tokens = mapOf("version" to "1.0")
+    inputs.properties(tokens)
+    val pattern = Regex(tokens.keys.joinToString("|") { Regex.escape("@$it@") })
+    filter { line: String -> pattern.replace(line) { tokens.getValue(it.value.removeSurrounding("@")) } }
+}
